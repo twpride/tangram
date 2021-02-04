@@ -1,6 +1,6 @@
 import { Shape } from "./shape.js"
 import { tL, shapeGeoms } from "./shapeGeoms.js"
-import { insidePoly, cross, calcPenetration, snapTo45, rotatePoints } from "./vectorUtils.js"
+import { insidePoly, cross, calcPenetration, snapTo45 } from "./vectorUtils.js"
 
 export function TangramGame() {
   this.container = document.getElementById('canv');
@@ -21,12 +21,13 @@ export function TangramGame() {
   ]
 
   this.shapes = shapeGeoms.map(
-    geom => {
-      geom = geom.map(ele => [ele[0] + 2 * tL, ele[1] + 2 * tL])
-      const shape = new Shape(geom.slice(1));
-      shape.centroid = geom[0];
-      shape.centroidOrig = geom[0];
-      shape.move([1 * tL, 1 * tL]);
+    obj => {
+      console.log(obj)
+      obj.vertices = obj.vertices.map(ele => [ele[0] + 2 * tL, ele[1] + 2 * tL])
+      obj.centroid = [obj.centroid[0] + 2 * tL, obj.centroid[1] + 2 * tL];
+      const shape = new Shape(...Object.values(obj));
+      // shape.move([1 * tL, 1 * tL]);
+      shape.rect= this.rect;
       return shape;
     }
   );
@@ -84,13 +85,15 @@ TangramGame.prototype.gameLoop = function () {
     this.ctx.translate(...trans)
 
     this.ctx.translate(...shape.centroidOrig)
-    this.ctx.rotate(-snapTo45(shape.orientation) * Math.PI / 180)
+    this.ctx.rotate(snapTo45(shape.orientation-shape.orientationOrig) * Math.PI / 180)
     this.ctx.translate(...shape.centroidOrig.map(ele => -ele))
 
     this.ctx.fill()
 
     this.ctx.restore()
 
+    // this.ctx.fillStyle = 'red';
+    // this.ctx.fillRect(...shape.centroid,4,4)
   }
 
 
@@ -106,6 +109,7 @@ TangramGame.prototype.onClickCanvas = function (e) {
     e.clientX - this.rect.left,
     e.clientY - this.rect.top,
   ];
+  let clickedShape = false;
   for (let i = this.shapes.length - 1; i >= 0; i--) {
     const shape = this.shapes[i];
     const res = insidePoly(shape.vertices, coord);
@@ -115,70 +119,75 @@ TangramGame.prototype.onClickCanvas = function (e) {
       this.shapes.push(...this.shapes.splice(i, 1))
       this.liftedPiece.add(this.shapes.length - 1)
     }
-    this.clickPos = coord;
-    this.angleTot = 0;
 
     const onShapeMove = (e_drag) => {
-      const coord = [
-        e_drag.clientX - this.rect.left,
-        e_drag.clientY - this.rect.top,
-      ];
-
       const delta = [e_drag.movementX, e_drag.movementY]
-
       shape.move(delta)
-
       if (e.detail < 2) {
         shape.move(this.checkCollisions(i, delta))
       }
-      this.clickPos = coord;
     }
 
     const onShapeRotate = (e) => {
+      // console.log(e)
       const coord = [
         e.clientX - this.rect.left,
         e.clientY - this.rect.top,
       ];
+      const prevCoord = [
+        coord[0] - e.movementX, 
+        coord[1] - e.movementY
+      ]
 
       let start = [];
       let end = [];
       for (let idx = 0; idx < 2; idx++) {
-        start[idx] = this.clickPos[idx] - shape.centroid[idx];
+        start[idx] = prevCoord[idx] - shape.centroid[idx];
         end[idx] = coord[idx] - shape.centroid[idx];
       }
 
-      const angle = - Math.asin(
+      const angle = Math.asin(
         cross(start, end) / Math.sqrt(
           (start[0] ** 2 + start[1] ** 2) *
           (end[0] ** 2 + end[1] ** 2)
         )
-      ) / Math.PI * 180
+      ) / Math.PI * 180;
 
-      shape.rotate(
-        snapTo45(shape.orientation + angle) - snapTo45(shape.orientation)
-      )
-      shape.orientation += angle;
-
-      this.clickPos = coord;
+      shape.snapRotate(angle)
     }
 
+    const onFlipCommand = (e) => {
+      // console.log(e)
+      if (e.key == " ") {
+        shape.flipPoints()
+      }
+    }
     const onShapeMoveEnd = (e) => {
       this.liftedPiece.delete(this.shapes.length - 1)
       this.canvas.removeEventListener('mousemove', onShapeMove)
       this.canvas.removeEventListener('mousemove', onShapeRotate)
       this.canvas.removeEventListener('mouseup', onShapeMoveEnd)
+      document.removeEventListener('keydown', onFlipCommand)
+
+      shape.orientation = snapTo45(shape.orientation)
     }
 
     if (e.which === 2) {
       this.canvas.addEventListener('mousemove', onShapeRotate)
+      document.addEventListener('keydown', onFlipCommand)
       this.canvas.addEventListener('mouseup', onShapeMoveEnd)
     } else {
       this.canvas.addEventListener('mousemove', onShapeMove)
       this.canvas.addEventListener('mouseup', onShapeMoveEnd)
     }
+    clickedShape = true;
     break;
   }
 
+  // if (!clickedShape) {
+  //   this.canvas.addEventListener('mousemove', onSelectMove)
+  //   this.canvas.addEventListener('mouseup', onSelectMoveEnd)
+  // }
 
 }
 

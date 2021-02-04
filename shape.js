@@ -1,24 +1,37 @@
-import { multMatrixVector, toVec, vecAdd, calcCentroid, rotatePoints } from './vectorUtils.js'
+import { multMatrixVector, toVec, vecAdd, calcCentroid, rotatePoints, snapTo45, flipPoints } from './vectorUtils.js'
 
-export function Shape(vertices = [], position = [0, 0], orientation = 0, color = 'rgb(255, 165, 0)') {
-  this.vertices = vertices;
-  this.centroid = [0, 0];
-  this.centroidOrig = [0, 0];
+export function Shape(type, centroid, orientation, flipped, vertices) {
+  this.type=type;
+  this.centroid = centroid;
+  this.centroidOrig = centroid;
   this.orientation = orientation;
-  this.color = color;
+  this.orientationOrig = orientation;
+  this.flipped = flipped;
+  this.vertices = vertices;
+  
+
   this.move = this.move.bind(this);
 }
 
 
 Shape.prototype.move = function (translate = [0, 0]) {
+
   this.centroid = this.centroid.map((coord, idx) => coord + translate[idx]);
   this.vertices = this.vertices.map(
     vtx => vtx.map((coord, idx) => coord + translate[idx])
   )
 }
 
-Shape.prototype.rotate = function (deg = 0, rotationPt = this.centroid) {
-  this.vertices = rotatePoints(deg,this.vertices,rotationPt)
+Shape.prototype.snapRotate = function (angle = 0, rotationPt = this.centroid) {
+
+  const deg = snapTo45(this.orientation + angle) - snapTo45(this.orientation)
+  this.vertices = rotatePoints(deg, this.vertices, rotationPt)
+  this.orientation += angle;
+}
+
+Shape.prototype.flipPoints = function (rotationPt = this.centroid) {
+  this.vertices = flipPoints(this.vertices, rotationPt).reverse()
+  this.orientation =180 - this.orientation;
 }
 
 Shape.prototype.calcCentroid = function (vertices) {

@@ -81,8 +81,20 @@ export function snapTo45(newori) {
 export function rotatePoints(deg, vertices, rotationPt) {
   const radians = deg * Math.PI / 180;
   const rotMat = [
-    Math.cos(radians), Math.sin(radians),
-    -Math.sin(radians), Math.cos(radians)
+    Math.cos(radians), -Math.sin(radians),
+    Math.sin(radians), Math.cos(radians)
+  ]
+  return vertices.map(
+    vec => vecAdd(
+      rotationPt, multMatrixVector(rotMat, toVec(rotationPt, vec))
+    )
+  )
+}
+
+export function flipPoints(vertices, rotationPt) {
+  const rotMat = [
+    -1, 0,
+    0, 1
   ]
   return vertices.map(
     vec => vecAdd(
