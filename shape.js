@@ -1,6 +1,6 @@
 import { multMatrixVector, toVec, vecAdd, calcCentroid, rotatePoints, snapTo45, flipPoints } from './vectorUtils.js'
 
-export function Shape(type, centroid, orientation, flipped, vertices) {
+export function Shape(type, centroid, orientation, flipped, vertices, area) {
   this.type=type;
   this.centroid = centroid;
   this.centroidOrig = centroid;
@@ -8,6 +8,7 @@ export function Shape(type, centroid, orientation, flipped, vertices) {
   this.orientationOrig = orientation;
   this.flipped = flipped;
   this.vertices = vertices;
+  this.area = area;
   
 
   this.move = this.move.bind(this);

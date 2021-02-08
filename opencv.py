@@ -1,37 +1,45 @@
-import numpy as np
+# Standard imports
 import cv2
-# img = cv2.imread('single.png')
-# img = cv2.imread('pentagon.png')
-img = cv2.imread('test.jpeg')
-print(img.shape)
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+import numpy as np;
 
-ret, thresh = cv2.threshold(gray, 32, 255, 1)
+# Read image
+# impre = cv2.imread("./179/tan142.jpg")
+# impre = cv2.imread("./BlobTest.webp")
+impre = cv2.imread("./ex.png")
 
-# contours,h = cv2.findContours(thresh,1,2)
+# gray = cv2.cvtColor(impre, cv2.COLOR_BGR2GRAY)
+# ret, im = cv2.threshold(gray, 90, 255, 1)
 
-# print(contours, h)
+im = cv2.cvtColor(impre, cv2.COLOR_BGR2GRAY)
 
-for cnt in contours:
-  approx = cv2.approxPolyDP(cnt, 0.01 * cv2.arcLength(cnt, True), True)
-  print(len(approx))
-  if len(approx) == 5:
-    print("pentagon")
-    cv2.drawContours(img, [cnt], 0, 255, -1)
-  elif len(approx) == 3:
-    print("triangle")
-    cv2.drawContours(img, [cnt], 0, (0, 255, 0), -1)
-  elif len(approx) == 4:
-    print("square")
-    cv2.drawContours(img, [cnt], 0, (0, 0, 255), -1)
-  elif len(approx) == 9:
-    print("half-circle")
-    cv2.drawContours(img, [cnt], 0, (255, 255, 0), -1)
-  elif len(approx) > 15:
-    print("circle")
-    cv2.drawContours(img, [cnt], 0, (0, 255, 255), -1)
+# cv2.imshow("Keypoints", im)
+# cv2.waitKey(0)
+params = cv2.SimpleBlobDetector_Params()
 
-# cv2.imshow('img',img)
-cv2.imshow('img', thresh)
+# params.minThreshold = 10;
+# params.maxThreshold = 200;
+
+# Filter by Area.
+# params.filterByArea = True
+# params.minArea = 100
+params.minThreshold = 100
+params.maxThreshold = 255
+params.filterByColor = True
+params.blobColor = 255
+params.filterByConvexity = False
+params.filterByCircularity = False
+
+# Set up the detector with default parameters.
+detector = cv2.SimpleBlobDetector_create(params)
+
+# Detect blobs.
+keypoints = detector.detect(im)
+
+
+# Draw detected blobs as red circles.
+# cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob
+im_with_keypoints = cv2.drawKeypoints(im, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+# Show keypoints
+cv2.imshow("Keypoints", im_with_keypoints)
 cv2.waitKey(0)
-cv2.destroyAllWindows()

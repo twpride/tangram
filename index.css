@@ -1,0 +1,15 @@
+.flexx {
+  display: flex;
+  flex-direction: row;
+} 
+
+#canv {
+  height: 800px;
+  width: 900px;
+}
+
+ 
+#pcanv {
+  min-height: 300px;
+  min-width: 300px;
+}
