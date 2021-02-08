@@ -1,7 +1,6 @@
-export const tL = 100;
 
 // vertices are listed in clockwise direction
-export const shapeGeoms = [
+export const shapeGeoms = (tL) => [
   {
     type: 1,
     centroid: [-2/3 * tL, -2/3 * tL],

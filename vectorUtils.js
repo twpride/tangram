@@ -19,7 +19,6 @@ export function insidePoly(vertices, p) {
 }
 
 
-
 export function multMatrixVector(matrix, vector) {
   if (!matrix.length % vector.length) {
     throw new Error('invalid matrix or vector dimensions')
@@ -35,10 +34,6 @@ export function multMatrixVector(matrix, vector) {
   return res;
 }
 
-export function calcCentroid(vertices) {
-  return vertices.reduce((acc, ele) => acc.map((e, idx) => e + ele[idx]))
-    .map(ele => ele / (vertices.length));
-}
 
 
 export function findIntersection(p, r, q, s) {

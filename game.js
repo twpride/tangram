@@ -1,49 +1,84 @@
 import { Shape } from "./shape.js"
-import { tL, shapeGeoms } from "./shapeGeoms.js"
+import { shapeGeoms } from "./shapeGeoms.js"
 import { insidePoly, cross, calcPenetration, snapTo45 } from "./vectorUtils.js"
-import { data } from './179.js'
+import { problems } from './problemsData.js'
 
 export function TangramGame() {
   this.container = document.getElementById('canv');
   this.canvasWH = [this.container.clientWidth, this.container.clientHeight];
-  // this.canvasWH = [900, 900];
-  this.ocanvasWH = [900, 900];
-
-  this.ocontainer = document.getElementById('ocanv');
-
   this.canvas = document.createElement('canvas');
-
   this.canvas.oncontextmenu = () => false;
-
   this.canvas.width = this.canvasWH[0];
   this.canvas.height = this.canvasWH[1];
   this.ctx = this.canvas.getContext("2d");
   this.container.appendChild(this.canvas);
+  
+  this.tL = 100;
+
+  this.silCanvWH = [900, 900];
+
+  this.silContainer = document.getElementById('silcanvas');
+  this.silCanvas = document.createElement('canvas')
+  this.silCanvas.width = this.silCanvWH[0];
+  this.silCanvas.height = this.silCanvWH[1];
+  this.silCtx = this.silCanvas.getContext('2d');
+  this.silContainer.appendChild(this.silCanvas);
+
+  this.ofc = document.createElement('canvas')
+  this.ofc.width = this.silCanvWH[0];
+  this.ofc.height = this.silCanvWH[1];
+  this.octx = this.ofc.getContext('2d');
+
+
+
+  this.thumbContainer = document.getElementById('pcanv');
+  this.thumbCanvasWH = [this.thumbContainer.clientWidth, this.thumbContainer.clientHeight];
+  this.thumbCanvas = document.createElement('canvas')
+  this.thumbCanvas.width = this.thumbCanvasWH[0];
+  this.thumbCanvas.height = this.thumbCanvasWH[1];
+  this.thumbCtx = this.thumbCanvas.getContext('2d');
+  this.thumbContainer.appendChild(this.thumbCanvas);
+
 
   this.rect = this.canvas.getBoundingClientRect();
-  this.clear = true;
   this.liftedPiece = new Set()
+
   this.selectedArea = null;
-  this.centroidTot = null;
+
+
+  this.canvas.addEventListener('mousedown', e => this.onClickCanvas(e))
+
+
+  this.img = new Image();
+  this.img.src = 'woodTexture.jpeg';
+
+  this.img.onload = () => {
+    this.pattern = this.ctx.createPattern(this.img, 'repeat');
+  };
+
+
+  document.addEventListener('keydown', e => this.loadNext(e))
+
+  this.probNum = 0;
+  this.loadNext()
+}
+
+
+TangramGame.prototype.loadNext = function (e) {
+  if (e && e.code == 'ArrowLeft' && this.probNum > 0) {
+    this.probNum -= 1;
+  } else if (e && e.code == 'ArrowRight' && this.probNum < problems.length - 1) {
+    this.probNum += 1;
+  }
+
+
   this.totArea = 0;
-  
-  this.ofc = document.createElement('canvas')
-  this.ofc.width = this.ocanvasWH[0];
-  this.ofc.height = this.ocanvasWH[1];
-  this.octx = this.ofc.getContext('2d');
-  // this.ocontainer.appendChild(this.ofc);
 
-  this.snapAngles = [
-    0, 9, 12, 15, 18, 24
-  ]
-
-  this.shapes = shapeGeoms.map(
+  this.shapes = shapeGeoms(this.tL).map(
     obj => {
-      obj.vertices = obj.vertices.map(ele => [ele[0] + 2 * tL, ele[1] + 2 * tL])
-      obj.centroid = [obj.centroid[0] + 2 * tL, obj.centroid[1] + 2 * tL];
+      obj.vertices = obj.vertices.map(ele => [ele[0] + 2 * this.tL, ele[1] + 2 * this.tL])
+      obj.centroid = [obj.centroid[0] + 2 * this.tL, obj.centroid[1] + 2 * this.tL];
       const shape = new Shape(...Object.values(obj));
-      // shape.move([2.5 * tL, 2.5 * tL]);
-      shape.rect = this.rect;
       this.totArea += obj.area
       return shape;
     }
@@ -52,109 +87,87 @@ export function TangramGame() {
   this.updateCentroidTot();
 
 
-  this.canvas.addEventListener('mousedown', e => this.onClickCanvas(e))
+  let prob = problems[this.probNum]
+
+  let factor = Math.sqrt(this.totArea / prob[prob.length - 2])
+  this.bounds = prob[prob.length - 1]
+
+  // console.log(
+  //   Math.max(...this.bounds.map(a => Math.abs(a)))
+  // )
 
 
-  this.img = new Image();
-  this.img.src = 'https://images.creativemarket.com/0.1.0/ps/1847013/300/200/m2/fpc/wm0/rj4vmxb5iztaaukfifmcjlk5ku99oiwv5yy4fwacx8ndcwpoudfyd2mtjdu5upc8-.jpg?1478261816&s=6dda4b70d21ef3998a2603682716f426';
+  this.thumbCtx.fillStyle = "white";
+  this.thumbCtx.strokeStyle = 'grey'
+  this.thumbCtx.fillRect(0, 0, ...this.thumbCanvasWH);
+  this.thumbCtx.strokeRect(0, 0, ...this.thumbCanvasWH);
 
-  this.img.onload = () => {
-    this.pattern = this.ctx.createPattern(this.img, 'repeat');
-  };
+  this.octx.fillStyle = "black";
+  this.octx.fillRect(0, 0, ...this.silCanvWH);
 
 
-  document.addEventListener(
-    'keydown', (e) => this.loadNext(e)
-  )
+  this.thumbCtx.beginPath();
+  this.octx.beginPath();
+  for (let i = 0; i < prob.length - 2; i++) {
+    if (isNaN(prob[i][0])) continue;
 
-  this.probNum = 0;
-  this.loadNext()
-}
+    const pdest = this.thumbCanvasWH.map((ele, idx) => (
+      ele / 2 + prob[i][idx]
+    ))
 
-TangramGame.prototype.loadNext = function (e) {
-  if (e && e.code == 'ArrowLeft' && this.probNum > 0) {
-    this.probNum -= 1;
-  } else if (e && e.code == 'ArrowRight' && this.probNum < data.length-1) {
-    this.probNum += 1;
-  }
-  console.log(this.probNum)
-  
-  let prob = data[this.probNum]
+    const dest = this.silCanvWH.map((ele, idx) => (
+      ele / 2 + prob[i][idx] * factor
+    ))
 
-  let factor = Math.sqrt(this.totArea / prob[prob.length - 1])
-
-  // xmin, xmax, ymin, ymax
-  this.bounds = [[Infinity, -Infinity], [Infinity, -Infinity]];
-  this.problem = []
-  for (let i = 0; i < prob.length - 1; i++) {
-    this.problem.push(
-      prob[i].map((e, idx) => {
-        const ret = e * factor;
-        if (!isNaN(ret)) {
-          this.bounds[idx][0] = Math.min(this.bounds[idx][0], ret);
-          this.bounds[idx][1] = Math.max(this.bounds[idx][1], ret);
-        }
-        return ret;
-      }
-      )
-    )
+    if (i == 0 || isNaN(prob[i - 1][0])) {
+      this.octx.moveTo(...dest)
+      this.thumbCtx.moveTo(...pdest)
+    } else {
+      this.octx.lineTo(...dest)
+      this.thumbCtx.lineTo(...pdest)
+    }
   }
 
+  this.thumbCtx.fillStyle = 'black';
+  this.thumbCtx.fill()
+
+  this.octx.fillStyle = '#01FFFF';
+  this.octx.fill()
 
 }
 
 TangramGame.prototype.gameLoop = function () {
-  if (this.clear) {
-    this.ctx.fillStyle = "white";
-    this.ctx.strokeStyle = 'grey'
-    this.ctx.fillRect(0, 0, ...this.canvasWH);
-    this.ctx.strokeRect(0, 0, ...this.canvasWH);
+  this.ctx.fillStyle = "white";
+  this.ctx.strokeStyle = 'grey'
+  this.ctx.fillRect(0, 0, ...this.canvasWH);
+  this.ctx.strokeRect(0, 0, ...this.canvasWH);
 
-    this.octx.fillStyle = "black";
-    this.octx.fillRect(0, 0, ...this.ocanvasWH);
-  }
-
-
-  this.octx.beginPath();
-  for (let i = 0; i < this.problem.length; i++) {
-    if (isNaN(this.problem[i][0])) continue;
-    const dest = this.ocanvasWH.map((ele, idx) => (
-      ele/2 + this.problem[i][idx]
-    ))
-
-    if (i == 0 || isNaN(this.problem[i - 1][0])) {
-      this.octx.moveTo(...dest)
-    } else {
-      this.octx.lineTo(...dest)
-    }
-  }
-  this.octx.fillStyle = '#01FFFF';
-  this.octx.fill()
+  this.silCtx.drawImage(this.ofc, 0, 0);
 
 
   for (let i = 0; i < this.shapes.length; i++) {
     this.ctx.beginPath();
-    this.octx.beginPath();
+    this.silCtx.beginPath();
 
     const shape = this.shapes[i];
     this.ctx.moveTo(
       ...shape.vertices[0]
     )
 
-    this.octx.moveTo(
-      ...shape.vertices[0].map((ele,idx)=>ele-this.centroidTot[idx]+this.ocanvasWH[idx]/2)
+    this.silCtx.moveTo(
+      ...shape.vertices[0].map((ele, idx) => ele - this.centroidTot[idx] + this.silCanvWH[idx] / 2)
     )
 
     for (let j = 1; j < shape.vertices.length; j++) {
       this.ctx.lineTo(
         ...shape.vertices[j]
       )
-      this.octx.lineTo(
-        ...shape.vertices[j].map((ele,idx)=>ele-this.centroidTot[idx]+this.ocanvasWH[idx]/2)
+      this.silCtx.lineTo(
+        ...shape.vertices[j].map((ele, idx) => ele - this.centroidTot[idx] + this.silCanvWH[idx] / 2)
       )
     }
     this.ctx.closePath()
-    this.octx.closePath()
+    this.silCtx.closePath()
 
     this.ctx.strokeStyle = 'white'
     this.ctx.fillStyle = this.pattern;
@@ -162,7 +175,7 @@ TangramGame.prototype.gameLoop = function () {
     this.ctx.stroke()
 
 
-    this.octx.fillStyle = 'black'
+    this.silCtx.fillStyle = 'black'
 
 
     let trans = shape.centroid.map((ele, idx) => ele - shape.centroidOrig[idx])
@@ -179,7 +192,7 @@ TangramGame.prototype.gameLoop = function () {
     this.ctx.translate(...shape.centroidOrig.map(ele => -ele))
 
     this.ctx.fill()
-    this.octx.fill()
+    this.silCtx.fill()
 
     this.ctx.restore()
 
@@ -187,38 +200,34 @@ TangramGame.prototype.gameLoop = function () {
     // this.ctx.fillRect(...shape.centroid,4,4)
   }
 
-  const arr = this.octx.getImageData(0,0,900,900).data;
+  const arr = this.silCtx.getImageData(0, 0, 900, 900).data;
   let sum = 0;
-  for (let i=0; i<arr.length; i+=4) {
+  for (let i = 0; i < arr.length; i += 4) {
     sum += arr[i]
   }
 
   this.ctx.fillStyle = 'red';
   this.ctx.fillRect(...this.centroidTot, 2, 2)
-  this.ctx.fillText(sum.toString(), 50, 50); 
+  this.ctx.fillText(sum.toString(), 50, 50);
 
-  const func = this.gameLoop.bind(this);
-  requestAnimationFrame(func);
+  requestAnimationFrame(()=>this.gameLoop());
 }
 
 
 
 TangramGame.prototype.onClickCanvas = function (e) {
-  // console.log('here')
-  // e.preventDefault()
-  // e.stopPropagation()
 
   const coord = [
     e.clientX - this.rect.left,
     e.clientY - this.rect.top,
   ];
-  let clickedShape = false;
+  // let clickedShape = false;
   for (let i = this.shapes.length - 1; i >= 0; i--) {
     const shape = this.shapes[i];
     const res = insidePoly(shape.vertices, coord);
     if (!res) continue;
 
-    if (e.which!=3  && e.detail >= 2) {
+    if (e.which != 3 && e.detail >= 2) {
       this.shapes.push(...this.shapes.splice(i, 1))
       this.liftedPiece.add(this.shapes.length - 1)
     }
@@ -232,7 +241,6 @@ TangramGame.prototype.onClickCanvas = function (e) {
     }
 
     const onShapeRotate = (e) => {
-      // console.log(e)
       const coord = [
         e.clientX - this.rect.left,
         e.clientY - this.rect.top,
@@ -287,7 +295,7 @@ TangramGame.prototype.onClickCanvas = function (e) {
       this.canvas.addEventListener('mousemove', onShapeMove)
       this.canvas.addEventListener('mouseup', onShapeMoveEnd)
     }
-    clickedShape = true;
+    // clickedShape = true;
     break;
   }
 
