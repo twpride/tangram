@@ -65,6 +65,7 @@ for f in range(len(filelist)):
     normalizedCoord.append([xmin,xmax,ymin,ymax])
     res.append(normalizedCoord)
 
+
 with open('../problemsData.js', 'w') as outfile:
   outfile.write('export const problems = ')
   json.dump(res, outfile)

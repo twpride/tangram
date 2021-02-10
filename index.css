@@ -1,20 +1,55 @@
 .flexx {
+  /* position: absolute; */
+  /* left: 10px; */
   display: flex;
   flex-direction: row;
 } 
 
-#canv {
-  height: 900px;
-  width: 900px;
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
- 
-#pcanv {
-  height: 300px;
-  width: 300px;
+#canv {
+
+  margin: auto;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+
+  height: 800px;
+  width: 1200px;
+  border-radius: 15px;
+  background-color: lightgrey;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
+
+#menu {
+
+  margin: auto;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+
+  height: 800px;
+  width: 1200px;
+  border-radius: 15px;
+  background-color: lightgrey;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+ 
 
 #silcanvas canvas{
   height: 300px;
   width: 300px;
+}
+
+#timer {
+  position:absolute;
+  right:10px;
 }

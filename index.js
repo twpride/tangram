@@ -1,5 +1,8 @@
 import {TangramGame} from './game.js'
+import {Colormap} from './colormap.js'
 
 let game = new TangramGame();
 window.game = game;
-game.gameLoop()
+new Colormap()
+
+// game.gameLoop()

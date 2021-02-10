@@ -65,11 +65,7 @@ export function calcPenetration(vertices, p, lastMouseMove) {
   return null;
 }
 
-export function snapTo45(newori) {
-  const round45 = Math.round(newori / 45) * 45;
-  const diff = Math.round(newori / 3) * 3 - round45;
-  return round45 + (Math.abs(diff) >= 7.5 ? diff : 0);
-}
+
 
 
 
@@ -86,14 +82,3 @@ export function rotatePoints(deg, vertices, rotationPt) {
   )
 }
 
-export function flipPoints(vertices, rotationPt) {
-  const rotMat = [
-    -1, 0,
-    0, 1
-  ]
-  return vertices.map(
-    vec => vecAdd(
-      rotationPt, multMatrixVector(rotMat, toVec(rotationPt, vec))
-    )
-  )
-}
