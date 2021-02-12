@@ -56,23 +56,39 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 11;
+  background-color: rgba(204, 204, 204, .7);
+}
+
+
+#mainCanvas {
+  position: 'absolute';
+  top: 0; left: 0; bottom: 0; right: 0;
+  margin: 'auto';
 }
  
-
+/* 
 #silcanvas canvas{
   height: 300px;
   width: 300px;
-}
+} */
 
-#timer {
+#thumblabel {
   position:absolute;
-  left:250px;
-  top:130px;
+  left:330px;
+  top: 140px;
+  /* bottom:150px; */
   z-index: 20;
+  font-family: sans-serif;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  height: 50px;
 }
 
 svg text {
-  cursor: default;
+  /* cursor: default; */
+  cursor: pointer;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
