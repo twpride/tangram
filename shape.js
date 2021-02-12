@@ -9,8 +9,10 @@ export const move = function (shape, translate = [0, 0]) {
   )
 }
 
-export const rotate = function (shape, angle = 0) {
-  shape.vertices = rotatePoints(angle, shape.vertices, shape.centroid)
+export const rotate = function (shape, angle = 0, rotationPt) {
+  const rtpt = rotationPt || shape.centroid;
+  // shape.vertices = rotatePoints(angle, shape.vertices, shape.centroid)
+  shape.vertices = rotatePoints(angle, shape.vertices, rtpt)
   shape.orientation += angle;
 }
 

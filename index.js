@@ -1,8 +1,12 @@
 import {TangramGame} from './game.js'
-import {Colormap} from './colormap.js'
+import {LevelSelector} from './levelSelector.js'
 
 let game = new TangramGame();
 window.game = game;
-new Colormap()
+window.levelSelector = new LevelSelector(game);
+
+
+
+
 
 // game.gameLoop()

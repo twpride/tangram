@@ -3,6 +3,7 @@ import { shapeGeoms } from "./shapeGeoms.js"
 import { insidePoly, cross, calcPenetration } from "./vectorUtils.js"
 import { problems } from './problemsData.js'
 import { Timer } from './timer.js'
+import { LevelSelector } from './levelSelector.js'
 
 export function TangramGame() {
 
@@ -12,13 +13,23 @@ export function TangramGame() {
 
   this.container = document.getElementById('canv');
   // this.canvasWH = [this.container.clientWidth, this.container.clientHeight];
-  this.canvasWH = [1190,790];
+  this.canvasWH = [1190, 790];
   this.canvas = document.createElement('canvas');
   this.canvas.oncontextmenu = () => false;
   this.canvas.width = this.canvasWH[0];
   this.canvas.height = this.canvasWH[1];
   this.ctx = this.canvas.getContext("2d");
   this.container.appendChild(this.canvas);
+
+
+  Object.assign(this.canvas.style, {
+    position: 'absolute',
+    left: '0px',
+    right: '0px',
+    bottom: '0px',
+    top: '0px',
+    "margin": 'auto',
+  });
 
 
   this.silCanvWH = [900, 900];
@@ -42,13 +53,29 @@ export function TangramGame() {
   this.thumbCtx = this.thumbCanvas.getContext('2d');
   // this.thumbContainer.appendChild(this.thumbCanvas);
 
+  this.previewCanvasWH = [270, 270];
+  this.previewCanvas = document.createElement('canvas')
+  this.previewCanvas.width = this.previewCanvasWH[0];
+  this.previewCanvas.height = this.previewCanvasWH[1];
+  this.previewCtx = this.previewCanvas.getContext('2d');
+
+  document.getElementById("menu").append(this.previewCanvas)
+
+  Object.assign(this.previewCanvas.style, {
+    position: 'absolute',
+    left: '5px',
+    top: '5px',
+  });
 
   this.animating = false
   this.liftedPiece = false;
   this.saveBoard = false;
+  // this.previewAnimating = false
+  this.fadeAlpha = 1;
 
-  this.backgroundcolor = 'lightgrey'
-
+  this.backgroundcolor = '#cccccc'
+  document.getElementById("menu").style.backgroundColor = this.backgroundcolor
+  document.getElementById("canv").style.backgroundColor = this.backgroundcolor
 
   this.timerEle = document.getElementById('timer');
   this.timer = new Timer(this.timerEle);
@@ -63,25 +90,6 @@ export function TangramGame() {
   }
 
 
-  this.selectEle = document.getElementById('probSelect');
-  // this.probNum = -1;
-  for (let i = 0; i < problems.length; i++) {
-    const choice = document.createElement('option');
-    choice.innerHTML = i + 1;
-    choice.value = i;
-    this.selectEle.appendChild(choice)
-  }
-  this.selectEle.addEventListener('change', (e) => {
-    this.saveProgress()
-
-    this.probNum = parseInt(this.selectEle.value);
-
-    this.timer.reset(
-      this.times[this.probNum] || 0 
-    )
-
-    this.loadProb()
-  })
 
 
 
@@ -92,40 +100,79 @@ export function TangramGame() {
   this.img.src = 'woodTexture.jpeg';
   this.img.onload = () => {
     this.pattern = this.ctx.createPattern(this.img, 'repeat');
-    this.renderLoop()
-  };
+    requestAnimationFrame(() => this.renderLoop())
 
+  };
 
   this.onShapeMove = this.onShapeMove.bind(this);
   this.onShapeRotate = this.onShapeRotate.bind(this);
-  this.onFlipCommand = this.onFlipCommand.bind(this);
   this.onShapeMoveEnd = this.onShapeMoveEnd.bind(this)
   this.onShapeRotateEnd = this.onShapeRotateEnd.bind(this)
   this.onClickCanvas = this.onClickCanvas.bind(this)
-  
+
+
+  this.probNum = -1;
+  // this.loadProb = this.loadProb.bind(this)
+
+
+  document.addEventListener('keydown', e => {
+    let pn = this.probNum;
+    // console.log(this.probNum,this.timer.total_S,'11111')
+    if (e && e.code == 'ArrowLeft' && this.probNum > 0) {
+      this.stopTimerSaveProgress()
+      pn -= 1;
+    } else if (e && e.code == 'ArrowRight' && this.probNum < problems.length - 1) {
+      this.stopTimerSaveProgress()
+      pn += 1;
+    } else {
+      return;
+    }
+    this.loadProb(pn)
+    requestAnimationFrame(() => this.renderLoop())
+    // this.renderLoop()
+  })
 
   this.canvas.addEventListener('mousedown', this.onClickCanvas)
 
-  window.addEventListener('beforeunload', ()=> {
-    this.saveProgress()
-    localStorage.setItem('times', JSON.stringify(this.times)) 
+  window.addEventListener('beforeunload', () => {
+    this.stopTimerSaveProgress()
+    localStorage.setItem('times', JSON.stringify(this.times))
   })
 
-  document.getElementById('backtogame').addEventListener('click', ()=>{
-    document.getElementById("menu").style.display = "none"; 
+
+
+  document.getElementById("menubutton").addEventListener('click', (e) => {
+    this.stopTimerSaveProgress()
+
+    document.getElementById('menu').style.display = 'block';
+    this.previewLoop()
+  })
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key != 'Escape') return;
+    if (document.getElementById('menu').style.display == 'block') {
+      document.getElementById('menu').style.display = 'none';
+      // this.renderLoop()
+    } else {
+      this.stopTimerSaveProgress()
+      document.getElementById('menu').style.display = 'block';
+    }
+  })
+
+
+
+  document.getElementById('backtogame').addEventListener('click', () => {
+    this.enterGame()
   })
 }
 
 
-TangramGame.prototype.saveProgress = function() {
+TangramGame.prototype.stopTimerSaveProgress = function () {
   this.timer.stop()
-
   if (this.saveBoard) {
     localStorage.setItem(this.probNum, JSON.stringify(this.shapes))
   }
-  if (this.timer.elapsed_S > 0) {
-    this.times[this.probNum] = this.timer.total_S;
-  }
+  this.times[this.probNum] = [this.timer.total_S, this.sum];
 }
 
 
@@ -136,14 +183,21 @@ TangramGame.prototype.resetBoard = function () {
   this.saveBoard = false;
 }
 
-TangramGame.prototype.loadProb = function () {
-  // if (this.sum > 5000) {
-  //   this.timer.stop()
-  //   this.timer.reset()
-  // }
+TangramGame.prototype.enterGame = function () {
+  document.getElementById("menu").style.display = "none";
+  // this.renderLoop()
+  requestAnimationFrame(() => this.renderLoop())
+}
+
+TangramGame.prototype.loadProb = function (probNum) {
+  this.probNum = probNum;
+
+  this.timer.reset(
+    this.times[this.probNum][0] || 0
+  )
 
   let shapeString;
-  if (shapeString = localStorage.getItem(this.probNum)) {
+  if (shapeString = localStorage.getItem(probNum)) {
     this.shapes = JSON.parse(shapeString)
   } else {
     this.shapes = JSON.parse(JSON.stringify(this.shapeGeoms))
@@ -151,7 +205,7 @@ TangramGame.prototype.loadProb = function () {
   }
   this.updateCentroidTot();
 
-  let prob = problems[this.probNum]
+  let prob = problems[probNum]
   window.prob = prob;
   let factor = Math.sqrt(this.totArea / prob[prob.length - 2])
   this.bounds = prob[prob.length - 1]
@@ -159,8 +213,9 @@ TangramGame.prototype.loadProb = function () {
   const thumbFactor = 0.8 * (this.thumbCanvasWH[0] / 2) / Math.max(...this.bounds.map(a => Math.abs(a)))
 
 
-  this.thumbCtx.fillStyle = this.backgroundcolor;
-  this.thumbCtx.fillRect(0, 0, ...this.thumbCanvasWH);
+  // this.thumbCtx.fillStyle = this.backgroundcolor;
+  // this.thumbCtx.fillRect(0, 0, ...this.thumbCanvasWH);
+  this.thumbCtx.clearRect(0, 0, ...this.thumbCanvasWH);
 
   this.octx.fillStyle = "black";
   this.octx.fillRect(0, 0, ...this.silCanvWH);
@@ -187,23 +242,46 @@ TangramGame.prototype.loadProb = function () {
     }
   }
 
-  this.thumbCtx.fillStyle = 'black';
+  this.thumbCtx.fillStyle = '#ad0f37';
   this.thumbCtx.fill()
 
   this.octx.fillStyle = '#01FFFF';
   this.octx.fill()
-  this.renderLoop()
+
+}
+
+TangramGame.prototype.previewLoop = function () {
+  // this.previewCtx.globalAlpha = 1;
+  // this.previewCtx.fillStyle = this.backgroundcolor;
+  // this.previewCtx.fillRect(0, 0, ...this.thumbCanvasWH)
+  this.previewCtx.clearRect(0, 0, ...this.previewCanvasWH)
+
+
+  // if (this.fadeAlpha > 0) {
+  this.previewCtx.drawImage(this.thumbCanvas, 0, 0);
+
+  if (this.fadeAlpha < 2.4) {
+    // this.previewCtx.globalAlpha = this.fadeAlpha;
+    // this.fadeAlpha += 1;
+    this.fadeAlpha += 0.05;
+    // this.fadeAlpha -= 0.02;
+  }
+  // const blur = this.fadeAlpha**2;
+  // const blur = this.fadeAlpha **3;
+  // this.previewCtx.filter = `blur(${blur}px)`
+  this.previewCtx.filter = `blur(14px)`
+
+  // if (this.previewAnimating) {
+  // requestAnimationFrame(() => this.previewLoop())
+  // }
 }
 
 TangramGame.prototype.renderLoop = function () {
+  this.ctx.globalAlpha = 1;
   this.ctx.fillStyle = this.backgroundcolor;
   this.ctx.fillRect(0, 0, ...this.canvasWH);
 
   this.silCtx.drawImage(this.ofc, 0, 0);
-  this.ctx.drawImage(this.thumbCanvas, 0, 0);
-
-  // this.ctx.strokeStyle = 'grey'
-  // this.ctx.strokeRect(0, 0, ...this.canvasWH);
 
   for (let i = 0; i < this.shapes.length; i++) {
     const shape = this.shapes[i];
@@ -239,15 +317,11 @@ TangramGame.prototype.renderLoop = function () {
     this.silCtx.fillStyle = 'black'
     this.silCtx.fill()
 
-
-    // this.ctx.fillStyle = 'black';
-    // this.ctx.strokeStyle = '#A0A0A0'
-    // this.ctx.lineWidth = 1;
-    // this.ctx.stroke()
-
     // this.ctx.fillStyle = 'red';
     // this.ctx.fillRect(...shape.centroid,4,4)
   }
+
+  this.ctx.drawImage(this.thumbCanvas, 0, 0);
 
   const arr = this.silCtx.getImageData(0, 0, 900, 900).data;
   this.sum = 0;
@@ -261,9 +335,10 @@ TangramGame.prototype.renderLoop = function () {
     this.timer.stop()
   }
 
-  this.ctx.fillStyle = 'red';
+  this.ctx.fillStyle = 'green';
   // this.ctx.fillRect(...this.centroidTot, 2, 2)
-  this.ctx.fillText(this.sum.toString(), 50, 50);
+  this.ctx.fillText(this.sum.toString(), 50, 550);
+  this.ctx.fillText(this.probNum.toString(), 50, 500);
 
   if (this.animating) {
     requestAnimationFrame(() => this.renderLoop());
@@ -321,7 +396,6 @@ TangramGame.prototype.updateCentroidTot = function () {
 }
 
 TangramGame.prototype.onClickCanvas = function (e) {
-
   const coord = [
     e.clientX - this.canvas.getBoundingClientRect().left,
     e.clientY - this.canvas.getBoundingClientRect().top,
@@ -330,30 +404,28 @@ TangramGame.prototype.onClickCanvas = function (e) {
   for (let i = this.shapes.length - 1; i >= 0; i--) {
     const shape = this.shapes[i];
     if (!insidePoly(shape.vertices, coord)) continue;
+    this.movingShapeIdx = i;
 
-    if (e.which != 3 && e.detail >= 2) {
-      this.shapes.push(...this.shapes.splice(i, 1))
-      this.liftedPiece = true;
-      this.movingShapeIdx = this.shapes.length - 1;
-    } else {
-      this.movingShapeIdx = i;
+    // if (e.which != 3) { // left, middle, click
+    if (e.button != 2) { // left, middle, click
+      if (e.detail >= 2) { // double + click
+        this.shapes.push(...this.shapes.splice(i, 1))
+        this.liftedPiece = true;
+        this.movingShapeIdx = this.shapes.length - 1;
+      }
+      this.canvas.addEventListener('mousemove', this.onShapeMove)
+      this.canvas.addEventListener('mouseup', this.onShapeMoveEnd)
+    } else { // right click
+      if (e.detail == 2) { // double
+        flipPoints(shape)
+      }
+      this.canvas.addEventListener('mousemove', this.onShapeRotate)
+      this.canvas.addEventListener('mouseup', this.onShapeRotateEnd)
     }
 
     this.animating = true;
-    this.renderLoop()
-
-
-
-
-
-    if (e.which === 3) {
-      this.canvas.addEventListener('mousemove', this.onShapeRotate)
-      document.addEventListener('keydown', this.onFlipCommand)
-      this.canvas.addEventListener('mouseup', this.onShapeRotateEnd)
-    } else {
-      this.canvas.addEventListener('mousemove', this.onShapeMove)
-      this.canvas.addEventListener('mouseup', this.onShapeMoveEnd)
-    }
+    // this.renderLoop()
+    requestAnimationFrame(() => this.renderLoop())
     break;
   }
 
@@ -361,19 +433,15 @@ TangramGame.prototype.onClickCanvas = function (e) {
 
 TangramGame.prototype.onShapeMoveEnd = function (e) {
   this.liftedPiece = false;
-  this.canvas.removeEventListener('mousemove', this.onShapeMove)
-  this.movingShapeIdx = null;
-
   this.updateCentroidTot()
+  this.canvas.removeEventListener('mousemove', this.onShapeMove)
   this.canvas.removeEventListener('mouseup', this.onShapeMoveEnd)
   this.animating = false
 }
 
 TangramGame.prototype.onShapeRotateEnd = function (e) {
-  const shape = this.shapes[this.movingShapeIdx]
+  snapTo45(this.shapes[this.movingShapeIdx])
   this.canvas.removeEventListener('mousemove', this.onShapeRotate)
-  document.removeEventListener('keydown', this.onFlipCommand)
-  snapTo45(shape)
   this.canvas.removeEventListener('mouseup', this.onShapeRotateEnd)
   this.animating = false
 }
@@ -415,11 +483,4 @@ TangramGame.prototype.onShapeRotate = function (e) {
 
   rotate(shape, angle)
   this.saveBoard = true;
-}
-
-TangramGame.prototype.onFlipCommand = function (e) {
-  const shape = this.shapes[this.movingShapeIdx]
-  if (e.key == " ") {
-    flipPoints(shape)
-  }
 }

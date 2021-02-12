@@ -14,7 +14,7 @@ Timer.prototype.start = function () {
     () => {
       if (document.visibilityState == 'hidden') return;
       this.elapsed_S += 1;
-      this.total_S = this.initial_S + (this.elapsed_S < 0 ? 0 : this.elapsed_S) 
+      this.total_S = this.initial_S + this.elapsed_S
       this.dispEle.innerHTML = this.convertSecsToMins(this.total_S)
     }, 1000
   )
@@ -25,9 +25,10 @@ Timer.prototype.stop = function () {
   this.intervalId = null;
 }
 
-Timer.prototype.reset = function (initial_S = 0) {
+Timer.prototype.reset = function (initial_S = 0, elapsed_S=0) {
   this.initial_S = initial_S
-  this.elapsed_S = -3
+  this.elapsed_S = elapsed_S
+  this.total_S = initial_S + elapsed_S
   this.dispEle.innerHTML = this.convertSecsToMins(this.initial_S)
 }
 

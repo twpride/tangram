@@ -10,6 +10,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  background-color: #ddd;
 }
 
 #canv {
@@ -21,12 +22,26 @@ body {
   height: 800px;
   width: 1200px;
   border-radius: 15px;
-  background-color: lightgrey;
-  display: flex;
+  /* display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center; */
 }
 
+
+#flip {
+  position: absolute;
+  top: 200px; right: 200px;
+}
+
+#menubutton{
+  position: absolute;
+  top: 10px; right: 20px;
+  z-index: 10;
+}
+#backtogame{
+  position: absolute;
+  top: 40px; right: 20px;
+}
 
 #menu {
 
@@ -37,10 +52,10 @@ body {
   height: 800px;
   width: 1200px;
   border-radius: 15px;
-  background-color: lightgrey;
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 11;
 }
  
 
@@ -51,5 +66,15 @@ body {
 
 #timer {
   position:absolute;
-  right:10px;
+  left:250px;
+  top:130px;
+  z-index: 20;
 }
+
+svg text {
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+ }
