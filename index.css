@@ -1,3 +1,23 @@
+/* * {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+  font-family: Sans-Serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root{
+  height: 100%;
+  max-height: 100vh;
+  box-sizing: border-box;
+} */
+
+
+
 .flexx {
   /* position: absolute; */
   /* left: 10px; */
@@ -90,7 +110,23 @@ svg text {
   user-select: none;
  }
 
- /* #playButton, #pauseButton { */
- /* #playButton {
-   size
- } */
+#cardUpArrow {
+  position: absolute;
+  left:202px;
+  bottom: 271px;
+  cursor: pointer;
+}
+
+#cardDownArrow {
+  position: absolute;
+  /* left:202px; */
+  bottom: 55px;
+  cursor: pointer;
+}
+
+#levelSelectorWrapper {
+  position: absolute;
+  bottom: 0px;
+  left: 40px;
+  cursor: pointer;
+}

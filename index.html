@@ -31,7 +31,6 @@
       <path
         d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
     </svg>
-
     <svg id='legend'>
       <rect width=100% y="0" height="20px" fill="url(#gyrGrad)" />
       <rect width=100% y="20" height="20px" fill="url(#blueGrad)" />
@@ -47,13 +46,25 @@
         </linearGradient>
       </defs>
     </svg>
-    <svg id='levelSelector'></svg>
+    <div id='levelSelectorWrapper'>
+      <svg id='cardUpArrow' class="cardArrow" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24"
+        width="24">
+        <path d="M0 0h24v24H0z" fill="none" />
+        <path d="M7 14l5-5 5 5z" />
+      </svg>
+      <svg id='levelSelector'></svg>
+      <svg id='cardDownArrow' class="cardArrow" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24"
+        width="24">
+        <path d="M0 0h24v24H0z" fill="none" />
+        <path d="M7 10l5 5 5-5z" />
+      </svg>
+    </div>
   </div>
   <!-- <div id="silcanvas"></div> -->
   <script src="index.js" type="module"></script>
 
 
-  
+
 </body>
 
 

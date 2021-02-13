@@ -25,6 +25,13 @@ export function LevelSelector(game) {
 
   this.vbOrigin = 0;
 
+  this.cardSlideStartTime = null;
+  this.vbOriginStart = null;
+
+  this.cardSlideLoop = this.cardSlideLoop.bind(this);
+  this.slideDir = 1;
+
+
   this.dragging = false;
 
   this.bezier = Bezier(0.4, 0.0, 0.2, 1);
@@ -39,10 +46,7 @@ export function LevelSelector(game) {
 
 
   Object.assign(this.svgNode.style, {
-    position: 'absolute',
-    bottom: '0px',
-    left: '40px',
-    cursor: 'pointer',
+
   });
 
 
@@ -120,9 +124,8 @@ export function LevelSelector(game) {
       }
     }
   }
-  
-  this.cardSlideLoop = this.cardSlideLoop.bind(this);
-  this.slideDir = 1;
+
+
 
 
   this.svgNode.addEventListener('mouseenter', (e) => {
@@ -169,19 +172,23 @@ LevelSelector.prototype.onMouseMove = function (e) {
 }
 
 LevelSelector.prototype.onMouseUp = function (e) {
-  this.pg = Math.round(this.vbOrigin / this.cardPitch);
-  this.vbOrigin = this.pg * this.cardPitch;
-  this.svgNode.setAttribute('viewBox', `0 ${this.vbOrigin} ${this.svg_w} ${this.cardPitch}`)
+  if (this.dragging) {
+    this.slideDir = Math.round(this.vbOrigin / this.cardPitch) - this.pg;
+    requestAnimationFrame(this.cardSlideLoop)
 
-  if (!this.dragging && e.target.tagName != "svg") {
+    this.dragging = false;
+  } else if (e.target.tagName != "svg") {
+
     this.game.menuEle.style.display = 'none';
     this.game.timer.start()
     if (this.game.sum > 5000) {
       this.game.timer.start()
     }
+
   }
 
-  this.dragging = false;
+
+
 
   document.removeEventListener('mousemove', this.onMouseMove)
   document.removeEventListener('mouseup', this.onMouseUp)
@@ -189,14 +196,20 @@ LevelSelector.prototype.onMouseUp = function (e) {
 
 
 LevelSelector.prototype.cardSlideLoop = function (timestamp) {
-  if (this.start === undefined) this.start = timestamp;
-  const elapsed = timestamp - this.start;
-  if (elapsed < 500) { // Stop the animation after 0.5 seconds
-    const newVbOrigin = this.vbOrigin + this.bezier(elapsed / 500) * this.cardPitch;
+  if (!this.cardSlideStartTime) {
+    this.cardSlideStartTime = timestamp;
+    this.vbOriginStart = this.vbOrigin;
+    this.delta = (this.pg + this.slideDir) * this.cardPitch - this.vbOrigin;
+  }
+  const elapsed = timestamp - this.cardSlideStartTime;
+  if (elapsed < 200) { // Stop the animation after 0.5 seconds
+    const newVbOrigin = this.vbOriginStart + this.bezier(elapsed / 200) * this.delta;
     this.svgNode.setAttribute('viewBox', `0 ${newVbOrigin} ${this.svg_w} ${this.cardPitch}`)
-    window.requestAnimationFrame(this.cardSlideLoop);
+    requestAnimationFrame(this.cardSlideLoop);
   } else {
-    const newVbOrigin = this.vbOrigin + this.cardPitch;
-    this.svgNode.setAttribute('viewBox', `0 ${newVbOrigin} ${this.svg_w} ${this.cardPitch}`)
+    this.vbOrigin = this.vbOriginStart + this.delta;
+    this.pg += this.slideDir;
+    this.svgNode.setAttribute('viewBox', `0 ${this.vbOrigin} ${this.svg_w} ${this.cardPitch}`)
+    this.cardSlideStartTime = null;
   }
 }

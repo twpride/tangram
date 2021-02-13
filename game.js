@@ -19,6 +19,9 @@ export function TangramGame() {
     fill: this.backgroundcolor
   })
 
+  setClassNodes('cardArrow', {
+    width: 30, height: 30,
+  })
 
   this.menuEle = document.getElementById('menu');
 
