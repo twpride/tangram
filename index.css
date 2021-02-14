@@ -16,15 +16,11 @@ html, body, #root{
   box-sizing: border-box;
 } */
 
+* {
+  box-sizing: border-box;
+  font-family: Sans-Serif;
+}
 
-
-
-.flexx {
-  /* position: absolute; */
-  /* left: 10px; */
-  display: flex;
-  flex-direction: row;
-} 
 
 body {
   display: flex;
@@ -35,17 +31,12 @@ body {
 }
 
 #canv {
-
   margin: auto;
   position: absolute;
   top: 0; left: 0; bottom: 0; right: 0;
 
   height: 800px;
   width: 1200px;
-  border-radius: 15px;
-  /* display: flex;
-  justify-content: center;
-  align-items: center; */
 }
 
 
@@ -70,7 +61,6 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 11;
-  /* background-color: rgba(204, 204, 204, .7); */
 }
 
 
@@ -87,7 +77,6 @@ body {
   position:absolute;
   left:330px;
   top: 120px;
-  /* bottom:150px; */
   z-index: 20;
   font-family: sans-serif;
   display: flex;
@@ -113,27 +102,21 @@ svg text {
   user-select: none;
  }
 
-#cardUpArrow {
-  position: absolute;
-  left:0; right:0;
-  margin-left: auto;
-  margin-right: auto;
-  bottom: 296px;
-  cursor: pointer;
-}
-
-#cardDownArrow {
-  position: absolute;
-  left:0; right:0;
-  margin-left: auto;
-  margin-right: auto;
-  bottom: 20px;
-  cursor: pointer;
-}
-
 #levelSelectorWrapper {
   position: absolute;
-  bottom: 0px;
-  left: 40px;
+  bottom: 187.5px;
+  right: 100px;
   cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+#arrowSpacer {
+  width: 400px;
+}
+
+.cardArrow {
+  z-index: 10;
 }

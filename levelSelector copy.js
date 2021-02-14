@@ -13,8 +13,8 @@ export function LevelSelector(game) {
   const pitch = 75;
   // const nrow = 18;
   // const ncol = 10;
-  const nrow = 30;
-  const ncol = 6;
+  const nrow = 36;
+  const ncol = 5;
 
   this.svg_w = (ncol - 1) * pitch + size;
   this.svg_h = (nrow - 1) * pitch + size;
@@ -23,9 +23,10 @@ export function LevelSelector(game) {
   // this.npg = 3;
   this.npg = 6;
 
-  this.cardHeight = nrow / this.npg * pitch - pitch + size;
-
-  this.cardPitch = this.cardHeight * 1.7;
+  this.cardHeight = nrow / this.npg * pitch;
+  // this.cardPitch = 350;
+  console.log(this.cardHeight,'ch')
+  this.cardPitch = this.cardHeight*1.7;
   this.cardOffset = (this.cardPitch - this.cardHeight) / 2;
 
   this.vbOrigin = 0;
@@ -44,21 +45,16 @@ export function LevelSelector(game) {
 
 
   this.svgNode = setNode('levelSelector', {
-    height: this.svg_w,
-    width: this.cardPitch,
-    viewBox: `${this.vbOrigin} 0  ${this.cardPitch} ${this.svg_w}`,
+    width: this.svg_w,
+    height: this.cardPitch,
+    viewBox: `0 ${this.vbOrigin} ${this.svg_w} ${this.cardPitch}`,
     preserveAspectRatio: 'xMinYMin slice',
     overflow: 'hidden'
   })
 
-  Object.assign(document.getElementById('levelSelector').style, {
-    position: 'absolute',
-    // 'z-index':1
-  });
-
   Object.assign(document.getElementById('levelSelectorWrapper').style, {
-    height: this.svg_w + 'px',
-    width: this.cardPitch + 'px',
+    width: this.svg_w + 'px',
+    height: this.cardPitch + 'px',
   });
 
   setClassNodes('cardArrow', {
@@ -77,19 +73,19 @@ export function LevelSelector(game) {
         fill: this.pg == 0 ? 'none' : this.game.color1
       })
       setNode('cardDownArrow', {
-        fill: this.pg == this.npg - 1 ? 'none' : this.game.color1
+        fill: this.pg == 2 ? 'none' : this.game.color1
       })
     }
   })
   document.getElementById('cardDownArrow').addEventListener('click', (e) => {
-    if (this.pg < this.npg - 1) {
+    if (this.pg < 2) {
       this.pg += 1
       requestAnimationFrame(this.cardSlideLoop)
       setNode('cardUpArrow', {
         fill: this.pg == 0 ? 'none' : this.game.color1
       })
       setNode('cardDownArrow', {
-        fill: this.pg == this.npg - 1 ? 'none' : this.game.color1
+        fill: this.pg == 2 ? 'none' : this.game.color1
       })
     }
   })
@@ -113,9 +109,9 @@ export function LevelSelector(game) {
   this.game.progress = [0, 0, 0];
 
   for (let pg = 0; pg < this.npg; pg++) {
-    for (let j = 0; j < ncol; j++) {
-      for (let i = 0; i < nrow / this.npg; i++) {
-        const idx = pg * nrow * ncol / this.npg + j * nrow / this.npg + i;
+    for (let i = 0; i < nrow / this.npg; i++) {
+      for (let j = 0; j < ncol; j++) {
+        const idx = pg * nrow * ncol / this.npg + i * ncol + j;
 
         const [time, score] = this.game.times[idx] || [0, 7000];
 
@@ -138,8 +134,8 @@ export function LevelSelector(game) {
         }
 
         const rect = createSVGNode('rect', {
-          y: j * pitch,
-          x: i * pitch + pg * this.cardPitch + this.cardOffset,
+          x: j * pitch,
+          y: i * pitch + pg * this.cardPitch + this.cardOffset,
           height: size,
           width: size,
           rx: 10,
@@ -150,8 +146,8 @@ export function LevelSelector(game) {
 
         const text = createSVGNode('text',
           {
-            y: j * pitch + size / 2,
-            x: i * pitch + size / 2 + pg * this.cardPitch + this.cardOffset,
+            x: j * pitch + size / 2,
+            y: i * pitch + size / 2 + pg * this.cardPitch + this.cardOffset,
             "font-size": 10,
             // fill: '#777777',
             fill: 'black',
@@ -176,10 +172,10 @@ export function LevelSelector(game) {
   this.svgNode.addEventListener('mouseover', (e) => {
     if (this.dragging || e.buttons != 0 || e.target.tagName == "svg") return;
     const coord = [
-      e.clientX - this.svgNode.getBoundingClientRect().left - this.cardOffset,
-      e.clientY - this.svgNode.getBoundingClientRect().top,
+      e.clientX - this.svgNode.getBoundingClientRect().left,
+      e.clientY - this.svgNode.getBoundingClientRect().top - this.cardOffset,
     ];
-    const val = this.pg * nrow * ncol / this.npg + Math.floor(coord[1] / pitch) * nrow / this.npg + Math.floor(coord[0] / pitch)
+    const val = this.pg * nrow * ncol / this.npg + Math.floor(coord[1] / pitch) * ncol + Math.floor(coord[0] / pitch)
     this.game.loadProb(val)
     requestAnimationFrame(this.game.renderLoop)
 
@@ -187,7 +183,7 @@ export function LevelSelector(game) {
     if (this.sum < 5000) {
       this.game.probState = 2;
     } else {
-      if (this.game.timer.total_S > 0) {
+      if (this.timer.total_S > 0) {
         this.game.probState = 1;
       } else {
         this.game.probState = 0;
@@ -208,14 +204,14 @@ export function LevelSelector(game) {
 
 LevelSelector.prototype.onMouseMove = function (e) {
   this.dragging = true;
-  this.vbOrigin -= e.movementX
+  this.vbOrigin -= e.movementY
 
   if (this.vbOrigin < -this.cardPitch * 0.05) {
     this.vbOrigin = -this.cardPitch * 0.05;
   } else if (this.vbOrigin > (this.npg - 1) * this.cardPitch + this.cardPitch * 0.05) {
     this.vbOrigin = (this.npg - 1) * this.cardPitch + this.cardPitch * 0.05;
   }
-  this.svgNode.setAttribute('viewBox', `${this.vbOrigin} 0 ${this.cardPitch} ${this.svg_w}`)
+  this.svgNode.setAttribute('viewBox', `0 ${this.vbOrigin} ${this.svg_w} ${this.cardPitch}`)
 }
 
 LevelSelector.prototype.onMouseUp = function (e) {
@@ -228,7 +224,7 @@ LevelSelector.prototype.onMouseUp = function (e) {
       fill: this.pg == 0 ? 'none' : this.game.color1
     })
     setNode('cardDownArrow', {
-      fill: this.pg == this.npg - 1 ? 'none' : this.game.color1
+      fill: this.pg == 2 ? 'none' : this.game.color1
     })
 
   } else if (e.target.tagName != "svg") {
@@ -236,6 +232,8 @@ LevelSelector.prototype.onMouseUp = function (e) {
     document.getElementById("pauseButton").style.display = 'block';
     requestAnimationFrame(this.game.renderLoop)
   }
+
+
 
 
   document.removeEventListener('mousemove', this.onMouseMove)
@@ -252,11 +250,11 @@ LevelSelector.prototype.cardSlideLoop = function (timestamp) {
   const elapsed = timestamp - this.cardSlideStartTime;
   if (elapsed < 200) { // Stop the animation after 0.5 seconds
     const newVbOrigin = this.vbOriginStart + this.bezier(elapsed / 200) * this.delta;
-    this.svgNode.setAttribute('viewBox', `${newVbOrigin} 0 ${this.cardPitch} ${this.svg_w}`)
+    this.svgNode.setAttribute('viewBox', `0 ${newVbOrigin} ${this.svg_w} ${this.cardPitch}`)
     requestAnimationFrame(this.cardSlideLoop);
   } else {
     this.vbOrigin = this.vbOriginStart + this.delta;
-    this.svgNode.setAttribute('viewBox', `${this.vbOrigin} 0 ${this.cardPitch} ${this.svg_w}`)
+    this.svgNode.setAttribute('viewBox', `0 ${this.vbOrigin} ${this.svg_w} ${this.cardPitch}`)
     this.cardSlideStartTime = null;
   }
 }
