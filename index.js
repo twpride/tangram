@@ -1,10 +1,10 @@
-import {TangramGame} from './game.js'
-import {LevelSelector} from './levelSelector.js'
+import { TangramGame } from './game.js'
+import { LevelSelector } from './levelSelector.js'
 
 let game = new TangramGame();
 window.game = game;
-window.levelSelector = new LevelSelector(game);
-
+const levelSelector = new LevelSelector(game);
+window.levelSelector = levelSelector
 
 
 

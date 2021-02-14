@@ -18,6 +18,7 @@ html, body, #root{
 
 
 
+
 .flexx {
   /* position: absolute; */
   /* left: 10px; */
@@ -69,16 +70,18 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 11;
-  background-color: rgba(204, 204, 204, .7);
+  /* background-color: rgba(204, 204, 204, .7); */
 }
 
 
 
-/* 
+
 #silcanvas canvas{
+  position: absolute;
+  bottom:0;
   height: 300px;
   width: 300px;
-} */
+}
 
 #thumblabel {
   position:absolute;
@@ -112,15 +115,19 @@ svg text {
 
 #cardUpArrow {
   position: absolute;
-  left:202px;
-  bottom: 271px;
+  left:0; right:0;
+  margin-left: auto;
+  margin-right: auto;
+  bottom: 296px;
   cursor: pointer;
 }
 
 #cardDownArrow {
   position: absolute;
-  /* left:202px; */
-  bottom: 55px;
+  left:0; right:0;
+  margin-left: auto;
+  margin-right: auto;
+  bottom: 20px;
   cursor: pointer;
 }
 
