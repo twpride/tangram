@@ -8,26 +8,22 @@ window.Bezier = Bezier
 export function LevelSelector(game) {
   this.game = game;
 
-  // const size = 30;
   const size = 50;
   const pitch = 75;
-  // const nrow = 18;
-  // const ncol = 10;
+
   const nrow = 30;
   const ncol = 6;
 
-  this.svg_w = (ncol - 1) * pitch + size;
-  this.svg_h = (nrow - 1) * pitch + size;
-
-  this.pg = 0;
-  // this.npg = 3;
   this.npg = 6;
 
-  this.cardHeight = nrow / this.npg * pitch - pitch + size;
+  this.w_padding = 2;
+  this.svg_w = (ncol - 1) * pitch + size + this.w_padding*2;
+  
+  this.h_padding = 120;
+  this.svg_h = (nrow/this.npg - 1) * pitch + size + this.h_padding*2;
 
-  this.cardPitch = this.cardHeight * 1.7;
-  this.cardOffset = (this.cardPitch - this.cardHeight) / 2;
 
+  this.pg = 0;
   this.vbOrigin = 0;
 
   this.cardSlideStartTime = null;
@@ -45,8 +41,8 @@ export function LevelSelector(game) {
 
   this.svgNode = setNode('levelSelector', {
     height: this.svg_w,
-    width: this.cardPitch,
-    viewBox: `${this.vbOrigin} 0  ${this.cardPitch} ${this.svg_w}`,
+    width: this.svg_h,
+    viewBox: `${this.vbOrigin} 0  ${this.svg_h} ${this.svg_w}`,
     preserveAspectRatio: 'xMinYMin slice',
     overflow: 'hidden'
   })
@@ -58,7 +54,7 @@ export function LevelSelector(game) {
 
   Object.assign(document.getElementById('levelSelectorWrapper').style, {
     height: this.svg_w + 'px',
-    width: this.cardPitch + 'px',
+    width: this.svg_h + 'px',
   });
 
   setClassNodes('cardArrow', {
@@ -138,8 +134,8 @@ export function LevelSelector(game) {
         }
 
         const rect = createSVGNode('rect', {
-          y: j * pitch,
-          x: i * pitch + pg * this.cardPitch + this.cardOffset,
+          y: j * pitch + this.w_padding,
+          x: i * pitch + pg * this.svg_h + this.h_padding,
           height: size,
           width: size,
           rx: 10,
@@ -150,8 +146,8 @@ export function LevelSelector(game) {
 
         const text = createSVGNode('text',
           {
-            y: j * pitch + size / 2,
-            x: i * pitch + size / 2 + pg * this.cardPitch + this.cardOffset,
+            y: j * pitch + size / 2 + this.w_padding,
+            x: i * pitch + size / 2 + pg * this.svg_h + this.h_padding,
             "font-size": 10,
             // fill: '#777777',
             fill: 'black',
@@ -176,7 +172,7 @@ export function LevelSelector(game) {
   this.svgNode.addEventListener('mouseover', (e) => {
     if (this.dragging || e.buttons != 0 || e.target.tagName == "svg") return;
     const coord = [
-      e.clientX - this.svgNode.getBoundingClientRect().left - this.cardOffset,
+      e.clientX - this.svgNode.getBoundingClientRect().left - this.h_padding,
       e.clientY - this.svgNode.getBoundingClientRect().top,
     ];
     const val = this.pg * nrow * ncol / this.npg + Math.floor(coord[1] / pitch) * nrow / this.npg + Math.floor(coord[0] / pitch)
@@ -202,25 +198,108 @@ export function LevelSelector(game) {
     document.addEventListener('mouseup', this.onMouseUp)
   })
 
+  this.svgNode.addEventListener('touchcancel', (e) => {
+    if (e.target.tagName == "svg") return;
+
+    // if (this.hoverNode) {
+    //   this.hoverNode.removeAttribute('stroke')
+    //   this.hoverNode.removeAttribute("stroke-width")
+    // }
+
+    // if (e.target.tagName == "text") {
+    //   e.target.previousElementSibling.setAttribute("stroke", 'black');
+    //   e.target.previousElementSibling.setAttribute("stroke-width", '2');
+    //   this.hoverNode = e.target.previousElementSibling;
+    // } else {
+    //   e.target.setAttribute("stroke", 'black');
+    //   e.target.setAttribute("stroke-width", '2');
+    //   this.hoverNode = e.target;
+    // }
+
+
+  })
+
+
+  this.svgNode.addEventListener('touchstart', (e) => {
+
+    this.prevTouch = [
+      e.touches[0].clientX,
+      e.touches[0].clientY
+    ]
+
+    if (e.target.tagName != "svg") {
+      const coord = [
+        e.touches[0].clientX - this.svgNode.getBoundingClientRect().left - this.h_padding,
+        e.touches[0].clientY - this.svgNode.getBoundingClientRect().top,
+      ];
+      const val = this.pg * nrow * ncol / this.npg + Math.floor(coord[1] / pitch) * nrow / this.npg + Math.floor(coord[0] / pitch)
+      if (val == this.game.probNum) {
+        this.game.menuEle.style.display = 'none';
+        document.getElementById("pauseButton").style.display = 'block';
+        requestAnimationFrame(this.game.renderLoop)
+      } else {
+
+        const nodeToClear = this.svgNode.childNodes[this.game.probNum * 2]
+        nodeToClear.removeAttribute('stroke')
+        nodeToClear.removeAttribute("stroke-width")
+
+        this.game.loadProb(val)
+
+        const nodeToHigh = this.svgNode.childNodes[this.game.probNum * 2]
+        nodeToHigh.setAttribute("stroke", 'black');
+        nodeToHigh.setAttribute("stroke-width", '2');
+
+        requestAnimationFrame(this.game.renderLoop)
+        if (this.sum < 5000) {
+          this.game.probState = 2;
+        } else {
+          if (this.game.timer.total_S > 0) {
+            this.game.probState = 1;
+          } else {
+            this.game.probState = 0;
+          }
+        }
+      }
+
+
+
+    }
+
+    document.addEventListener('touchmove', this.onMouseMove)
+    document.addEventListener('touchend', this.onMouseUp)
+  })
+
+  this.svgNode.oncontextmenu = () => false;
+
   this.onMouseMove = this.onMouseMove.bind(this);
   this.onMouseUp = this.onMouseUp.bind(this);
 }
 
 LevelSelector.prototype.onMouseMove = function (e) {
   this.dragging = true;
-  this.vbOrigin -= e.movementX
 
-  if (this.vbOrigin < -this.cardPitch * 0.05) {
-    this.vbOrigin = -this.cardPitch * 0.05;
-  } else if (this.vbOrigin > (this.npg - 1) * this.cardPitch + this.cardPitch * 0.05) {
-    this.vbOrigin = (this.npg - 1) * this.cardPitch + this.cardPitch * 0.05;
+  if (e.touches) {
+    this.vbOrigin -= e.touches[0].clientX - this.prevTouch[0];
+    this.prevTouch = [
+      e.touches[0].clientX,
+      e.touches[0].clientY
+    ];
+
+  } else {
+    this.vbOrigin -= e.movementX;
   }
-  this.svgNode.setAttribute('viewBox', `${this.vbOrigin} 0 ${this.cardPitch} ${this.svg_w}`)
+
+  if (this.vbOrigin < -this.svg_h * 0.05) {
+    this.vbOrigin = -this.svg_h * 0.05;
+  } else if (this.vbOrigin > (this.npg - 1) * this.svg_h + this.svg_h * 0.05) {
+    this.vbOrigin = (this.npg - 1) * this.svg_h + this.svg_h * 0.05;
+  }
+  this.svgNode.setAttribute('viewBox', `${this.vbOrigin} 0 ${this.svg_h} ${this.svg_w}`)
 }
 
 LevelSelector.prototype.onMouseUp = function (e) {
   if (this.dragging) {
-    this.pg = Math.round(this.vbOrigin / this.cardPitch);
+    this.pg = Math.round(this.vbOrigin / this.svg_h);
     requestAnimationFrame(this.cardSlideLoop)
     this.dragging = false;
 
@@ -231,7 +310,7 @@ LevelSelector.prototype.onMouseUp = function (e) {
       fill: this.pg == this.npg - 1 ? 'none' : this.game.color1
     })
 
-  } else if (e.target.tagName != "svg") {
+  } else if (!e.touches && e.target.tagName != "svg") {
     this.game.menuEle.style.display = 'none';
     document.getElementById("pauseButton").style.display = 'block';
     requestAnimationFrame(this.game.renderLoop)
@@ -247,16 +326,16 @@ LevelSelector.prototype.cardSlideLoop = function (timestamp) {
   if (!this.cardSlideStartTime) {
     this.cardSlideStartTime = timestamp;
     this.vbOriginStart = this.vbOrigin;
-    this.delta = this.pg * this.cardPitch - this.vbOrigin;
+    this.delta = this.pg * this.svg_h - this.vbOrigin;
   }
   const elapsed = timestamp - this.cardSlideStartTime;
   if (elapsed < 200) { // Stop the animation after 0.5 seconds
     const newVbOrigin = this.vbOriginStart + this.bezier(elapsed / 200) * this.delta;
-    this.svgNode.setAttribute('viewBox', `${newVbOrigin} 0 ${this.cardPitch} ${this.svg_w}`)
+    this.svgNode.setAttribute('viewBox', `${newVbOrigin} 0 ${this.svg_h} ${this.svg_w}`)
     requestAnimationFrame(this.cardSlideLoop);
   } else {
     this.vbOrigin = this.vbOriginStart + this.delta;
-    this.svgNode.setAttribute('viewBox', `${this.vbOrigin} 0 ${this.cardPitch} ${this.svg_w}`)
+    this.svgNode.setAttribute('viewBox', `${this.vbOrigin} 0 ${this.svg_h} ${this.svg_w}`)
     this.cardSlideStartTime = null;
   }
 }

@@ -106,6 +106,8 @@ export function TangramGame() {
   this.onClickCanvas = this.onClickCanvas.bind(this);
   this.renderLoop = this.renderLoop.bind(this);
 
+  this.onTouchCanvas = this.onTouchCanvas.bind(this);
+
 
 
   document.addEventListener('keydown', e => {
@@ -124,6 +126,7 @@ export function TangramGame() {
   })
 
   this.canvas.addEventListener('mousedown', this.onClickCanvas)
+  this.canvas.addEventListener('touchstart', this.onTouchCanvas)
 
   window.addEventListener('beforeunload', () => {
     this.stopTimerSaveProgress()
@@ -191,8 +194,8 @@ TangramGame.prototype.stopTimerSaveProgress = function () {
     }
   }
 
-  this.progress[this.probState]-=1;
-  this.progress[newProbState]+=1;
+  this.progress[this.probState] -= 1;
+  this.progress[newProbState] += 1;
 
   document.getElementById('levelSelector').childNodes[this.probNum * 2].setAttribute('fill', color);
 
@@ -368,6 +371,16 @@ TangramGame.prototype.renderLoop = function () {
   if (this.animating) {
     requestAnimationFrame(this.renderLoop);
   }
+
+
+  this.canvas.addEventListener('touchcancel', (e) => {
+
+    console.log('cancelled')
+
+  })
+
+
+
 }
 
 TangramGame.prototype.checkCollisions = function (movingShapeIdx, delta) {
@@ -421,6 +434,7 @@ TangramGame.prototype.updateCentroidTot = function () {
 }
 
 TangramGame.prototype.onClickCanvas = function (e) {
+  console.log('click')
   const coord = [
     e.clientX - this.canvas.getBoundingClientRect().left,
     e.clientY - this.canvas.getBoundingClientRect().top,
@@ -456,11 +470,78 @@ TangramGame.prototype.onClickCanvas = function (e) {
 
 }
 
+TangramGame.prototype.onTouchCanvas = function (e) {
+  // console.log(e, 'eee')
+  // e.touches[0].clientX
+  e.preventDefault() // prevent touch cancel event from firing
+
+
+  const coord = [
+    e.touches[0].clientX - this.canvas.getBoundingClientRect().left,
+    e.touches[0].clientY - this.canvas.getBoundingClientRect().top,
+  ];
+
+  for (let i = this.shapes.length - 1; i >= 0; i--) {
+    const shape = this.shapes[i];
+    if (!insidePoly(shape.vertices, coord)) continue;
+    this.movingShapeIdx = i;
+
+    if (e.touches.length < 2) {
+      this.prevTouch = [[
+        e.touches[0].clientX,
+        e.touches[0].clientY
+      ]]
+
+      document.addEventListener('touchmove', this.onShapeMove)
+      document.addEventListener('touchend', this.onShapeMoveEnd)
+
+      this.longpressId = setTimeout(
+        () => {
+          this.shapes.push(...this.shapes.splice(i, 1))
+          this.liftedPiece = true;
+          this.movingShapeIdx = this.shapes.length - 1;
+        }
+        , 500
+      )
+
+    } else { // more than 1 touch point
+      this.prevTouch = e.touches.map(
+        t => {
+          [t.clientX, t.clientY]
+        }
+      )
+
+      this.longpressId = setTimeout(
+        () => {
+          flipPoints(shape)
+        }
+        , 500
+      )
+
+      document.addEventListener('touchmove', this.onShapeRotate)
+      document.addEventListener('touchend', this.onShapeRotateEnd)
+    }
+
+    this.animating = true;
+    // this.renderLoop()
+    requestAnimationFrame(this.renderLoop)
+    break;
+  }
+
+}
+
+
+
+
 TangramGame.prototype.onShapeMoveEnd = function (e) {
   this.liftedPiece = false;
   this.updateCentroidTot()
   document.removeEventListener('mousemove', this.onShapeMove)
   document.removeEventListener('mouseup', this.onShapeMoveEnd)
+
+  document.removeEventListener('touchmove', this.onShapeMove)
+  document.removeEventListener('touchend', this.onShapeMoveEnd)
+
   this.animating = false
 }
 
@@ -472,10 +553,26 @@ TangramGame.prototype.onShapeRotateEnd = function (e) {
 }
 
 TangramGame.prototype.onShapeMove = function (e) {
+  // console.log('shmm',e)
+  clearInterval(this.longpressId)
+
+  console.log(this.movingShapeIdx, 'midx')
   if (e.target.tagName == 'HTML') return;
-  // console.log(e.target.tagName)
   const shape = this.shapes[this.movingShapeIdx];
-  const delta = [e.movementX, e.movementY];
+  let delta;
+  if (e.touches) {
+    delta = [
+      e.touches[0].clientX - this.prevTouch[0][0],
+      e.touches[0].clientY - this.prevTouch[0][1]
+    ];
+    // console.log(delta,'dd')
+    this.prevTouch = [[
+      e.touches[0].clientX,
+      e.touches[0].clientY
+    ]]
+  } else {
+    delta = [e.movementX, e.movementY];
+  }
   move(shape, delta);
   if (!this.liftedPiece) {
     move(shape, this.checkCollisions(this.movingShapeIdx, delta));
@@ -485,23 +582,44 @@ TangramGame.prototype.onShapeMove = function (e) {
 
 TangramGame.prototype.onShapeRotate = function (e) {
   const shape = this.shapes[this.movingShapeIdx]
-  const coord = [
-    e.clientX - this.canvas.getBoundingClientRect().left,
-    e.clientY - this.canvas.getBoundingClientRect().top,
-  ];
-  const prevCoord = [
-    coord[0] - e.movementX,
-    coord[1] - e.movementY
-  ]
+
 
   let start = [];
   let end = [];
-  for (let idx = 0; idx < 2; idx++) {
-    start[idx] = prevCoord[idx] - shape.centroid[idx];
-    end[idx] = coord[idx] - shape.centroid[idx];
+  let angle;
+
+  if (e.touches) {
+    clearInterval(this.longpressId)
+
+    const currTouch = e.touches.map(
+      t => {
+        [t.clientX, t.clientY]
+      }
+    )
+
+    for (let idx = 0; idx < 2; idx++) {
+      start[idx] = this.prevTouch[1][idx] - this.prevTouch[0][idx];
+      end[idx] = currTouch[1][idx] - currTouch[0][idx];
+    }
+
+  } else {
+    const coord = [
+      e.clientX - this.canvas.getBoundingClientRect().left,
+      e.clientY - this.canvas.getBoundingClientRect().top,
+    ];
+    const prevCoord = [
+      coord[0] - e.movementX,
+      coord[1] - e.movementY
+    ]
+
+    for (let idx = 0; idx < 2; idx++) {
+      start[idx] = prevCoord[idx] - shape.centroid[idx];
+      end[idx] = coord[idx] - shape.centroid[idx];
+    }
+
   }
 
-  const angle = Math.asin(
+  angle = Math.asin(
     cross(start, end) / Math.sqrt(
       (start[0] ** 2 + start[1] ** 2) *
       (end[0] ** 2 + end[1] ** 2)

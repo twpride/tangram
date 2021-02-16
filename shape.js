@@ -2,7 +2,6 @@ import { rotatePoints, multMatrixVector, toVec, vecAdd } from './vectorUtils.js'
 
 
 export const move = function (shape, translate = [0, 0]) {
-
   shape.centroid = shape.centroid.map((coord, idx) => coord + translate[idx]);
   shape.vertices = shape.vertices.map(
     vtx => vtx.map((coord, idx) => coord + translate[idx])
