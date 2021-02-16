@@ -434,7 +434,6 @@ TangramGame.prototype.updateCentroidTot = function () {
 }
 
 TangramGame.prototype.onClickCanvas = function (e) {
-  console.log('click')
   const coord = [
     e.clientX - this.canvas.getBoundingClientRect().left,
     e.clientY - this.canvas.getBoundingClientRect().top,
@@ -463,7 +462,6 @@ TangramGame.prototype.onClickCanvas = function (e) {
     }
 
     this.animating = true;
-    // this.renderLoop()
     requestAnimationFrame(this.renderLoop)
     break;
   }
@@ -471,8 +469,6 @@ TangramGame.prototype.onClickCanvas = function (e) {
 }
 
 TangramGame.prototype.onTouchCanvas = function (e) {
-  // console.log(e, 'eee')
-  // e.touches[0].clientX
   e.preventDefault() // prevent touch cancel event from firing
 
 
@@ -485,16 +481,23 @@ TangramGame.prototype.onTouchCanvas = function (e) {
     const shape = this.shapes[i];
     if (!insidePoly(shape.vertices, coord)) continue;
     this.movingShapeIdx = i;
-    console.log(e.touches, 'ocuhes')
 
     if (e.touches.length < 2) {
       this.prevTouch = [[
         e.touches[0].clientX,
         e.touches[0].clientY
       ]]
-
       document.addEventListener('touchmove', this.onShapeMove)
       document.addEventListener('touchend', this.onShapeMoveEnd)
+
+      if (this.doubleTapId) { // double
+        flipPoints(shape)
+      }
+
+      this.doubleTapId = setTimeout(() => {
+        this.doubleTapId = null
+      }, 400
+      )
 
       this.longpressId = setTimeout(
         () => {
@@ -502,29 +505,26 @@ TangramGame.prototype.onTouchCanvas = function (e) {
           this.liftedPiece = true;
           this.movingShapeIdx = this.shapes.length - 1;
         }
-        , 500
+        , 400
       )
 
     } else { // more than 1 touch point
+      document.removeEventListener('touchmove', this.onShapeMove)
+      document.removeEventListener('touchend', this.onShapeMoveEnd)
+      clearInterval(this.longpressId)
+      this.liftedPiece = false;
 
       this.prevTouch = [
         [e.touches[0].clientX, e.touches[0].clientY],
         [e.touches[1].clientX, e.touches[1].clientY]
       ]
 
-      this.longpressId = setTimeout(
-        () => {
-          flipPoints(shape)
-        }
-        , 500
-      )
-
       document.addEventListener('touchmove', this.onShapeRotate)
       document.addEventListener('touchend', this.onShapeRotateEnd)
+
     }
 
     this.animating = true;
-    // this.renderLoop()
     requestAnimationFrame(this.renderLoop)
     break;
   }
@@ -540,6 +540,7 @@ TangramGame.prototype.onShapeMoveEnd = function (e) {
   document.removeEventListener('mousemove', this.onShapeMove)
   document.removeEventListener('mouseup', this.onShapeMoveEnd)
 
+  clearInterval(this.longpressId)
   document.removeEventListener('touchmove', this.onShapeMove)
   document.removeEventListener('touchend', this.onShapeMoveEnd)
 
@@ -547,17 +548,19 @@ TangramGame.prototype.onShapeMoveEnd = function (e) {
 }
 
 TangramGame.prototype.onShapeRotateEnd = function (e) {
+
   snapTo45(this.shapes[this.movingShapeIdx])
   document.removeEventListener('mousemove', this.onShapeRotate)
   document.removeEventListener('mouseup', this.onShapeRotateEnd)
+
+  document.removeEventListener('touchmove', this.onShapeRotate)
+  document.removeEventListener('touchend', this.onShapeRotateEnd)
+  // this.liftedPiece = false;
   this.animating = false
 }
 
 TangramGame.prototype.onShapeMove = function (e) {
-  // console.log('shmm',e)
   clearInterval(this.longpressId)
-
-  console.log(this.movingShapeIdx, 'midx')
   if (e.target.tagName == 'HTML') return;
   const shape = this.shapes[this.movingShapeIdx];
   let delta;
@@ -566,7 +569,6 @@ TangramGame.prototype.onShapeMove = function (e) {
       e.touches[0].clientX - this.prevTouch[0][0],
       e.touches[0].clientY - this.prevTouch[0][1]
     ];
-    // console.log(delta,'dd')
     this.prevTouch = [[
       e.touches[0].clientX,
       e.touches[0].clientY
@@ -591,19 +593,17 @@ TangramGame.prototype.onShapeRotate = function (e) {
 
   if (e.touches) {
     clearInterval(this.longpressId)
-
     const currTouch = [
       [e.touches[0].clientX, e.touches[0].clientY],
       [e.touches[1].clientX, e.touches[1].clientY]
     ]
 
-
-
-
     for (let idx = 0; idx < 2; idx++) {
       start[idx] = this.prevTouch[1][idx] - this.prevTouch[0][idx];
       end[idx] = currTouch[1][idx] - currTouch[0][idx];
     }
+
+    this.prevTouch = currTouch;
 
   } else {
     const coord = [
