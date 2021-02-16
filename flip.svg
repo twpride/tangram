@@ -1,0 +1,6 @@
+<svg id='pauseButton' class="playpause" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+  <path
+    style="fill:#7e0000;fill-opacity:1;stroke:none;stroke-width:1.02083325;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+    d="M 2.5527344 0 C 1.1388803 0 -1.4802974e-15 1.1388803 0 2.5527344 L 0 21.447266 C 0 22.86112 1.1388803 24 2.5527344 24 L 21.447266 24 C 22.86112 24 24 22.86112 24 21.447266 L 24 2.5527344 C 24 1.1388803 22.86112 -1.4802974e-15 21.447266 0 L 2.5527344 0 z M 11.5 1.5 L 12.5 1.5 L 12.5 4.5 L 11.5 4.5 L 11.5 1.5 z M 8 3 L 8 15 L 2 21 L 2 9 L 8 3 z M 16 3 L 22 9 L 22 21 L 16 15 L 16 3 z M 11.5 7.5 L 12.5 7.5 L 12.5 10.5 L 11.5 10.5 L 11.5 7.5 z M 11.5 13.5 L 12.5 13.5 L 12.5 16.5 L 11.5 16.5 L 11.5 13.5 z M 11.5 19.5 L 12.5 19.5 L 12.5 22.5 L 11.5 22.5 L 11.5 19.5 z "
+    id="rect851" />
+</svg>
