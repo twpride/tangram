@@ -13,23 +13,8 @@ export function TangramGame() {
   this.color2 = '#ad0f37'
 
   document.getElementById("canv").style.backgroundColor = this.backgroundcolor
-  // document.getElementById("menu").style.backgroundColor = 'red'
-
-  setClassNodes('playpause', {
-    width: 50, height: 50, fill: this.color2
-  })
-
-  // setClassNodes('playPauseFill', {
-  //   fill: this.backgroundcolor
-  // })
 
 
-
-  this.menuEle = document.getElementById('menu');
-
-  this.tL = 100;
-  this.shapeGeoms = shapeGeoms(this.tL)
-  this.totArea = this.shapeGeoms.reduce((acc, ele) => acc + ele.area, 0);
 
 
   this.container = document.getElementById('canv');
@@ -46,6 +31,11 @@ export function TangramGame() {
     margin: 'auto',
   });
 
+  this.tL = this.canvasWH[1]/8;
+  this.shapeGeoms = shapeGeoms(this.tL)
+  this.totArea = this.shapeGeoms.reduce((acc, ele) => acc + ele.area, 0);
+
+
   this.silCanvWH = [900, 900];
 
   // this.silContainer = document.getElementById('silcanvas');
@@ -61,14 +51,13 @@ export function TangramGame() {
   this.octx = this.ofc.getContext('2d');
 
   // this.thumbContainer = document.getElementById('pcanv');
-  this.thumbCanvasWH = [250, 250];
+  this.thumbCanvasWH = [2.5*this.tL, 2.5*this.tL];
   this.thumbCanvas = document.createElement('canvas')
   this.thumbCanvas.width = this.thumbCanvasWH[0];
   this.thumbCanvas.height = this.thumbCanvasWH[1];
   this.thumbCtx = this.thumbCanvas.getContext('2d');
   this.thumbLeftTopOffset = [40, 40];
   // this.thumbContainer.appendChild(this.thumbCanvas);
-
 
 
 
@@ -135,6 +124,9 @@ export function TangramGame() {
 
 
 
+
+  this.menuEle = document.getElementById('menu');
+
   document.getElementById("pauseButton").style.display = 'none'
 
   document.getElementById("pauseButton").addEventListener('click', (e) => {
@@ -162,6 +154,11 @@ export function TangramGame() {
       document.getElementById("pauseButton").style.display = 'none'
     }
     requestAnimationFrame(this.renderLoop)
+  })
+
+
+  setClassNodes('playpause', {
+    width: 50, height: 50, fill: this.color2
   })
 
 }

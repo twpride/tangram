@@ -233,6 +233,7 @@ export function LevelSelector(game) {
         e.touches[0].clientY - this.svgNode.getBoundingClientRect().top,
       ];
       const val = this.pg * nrow * ncol / this.npg + Math.floor(coord[1] / pitch) * nrow / this.npg + Math.floor(coord[0] / pitch)
+      console.log(val, this.game.probNum)
       if (val == this.game.probNum) {
         this.game.menuEle.style.display = 'none';
         document.getElementById("pauseButton").style.display = 'block';
@@ -266,13 +267,14 @@ export function LevelSelector(game) {
     }
 
     document.addEventListener('touchmove', this.onMouseMove)
-    document.addEventListener('touchend', this.onMouseUp)
+    document.addEventListener('touchend', this.onTouchEnd)
   })
 
   this.svgNode.oncontextmenu = () => false;
 
   this.onMouseMove = this.onMouseMove.bind(this);
   this.onMouseUp = this.onMouseUp.bind(this);
+  this.onTouchEnd = this.onTouchEnd.bind(this);
 }
 
 LevelSelector.prototype.onMouseMove = function (e) {
@@ -298,6 +300,7 @@ LevelSelector.prototype.onMouseMove = function (e) {
 }
 
 LevelSelector.prototype.onMouseUp = function (e) {
+  console.log(e)
   if (this.dragging) {
     this.pg = Math.round(this.vbOrigin / this.svg_h);
     requestAnimationFrame(this.cardSlideLoop)
@@ -320,6 +323,32 @@ LevelSelector.prototype.onMouseUp = function (e) {
   document.removeEventListener('mousemove', this.onMouseMove)
   document.removeEventListener('mouseup', this.onMouseUp)
 }
+
+LevelSelector.prototype.onTouchEnd = function (e) {
+  e.preventDefault()
+  if (this.dragging) {
+    this.pg = Math.round(this.vbOrigin / this.svg_h);
+    requestAnimationFrame(this.cardSlideLoop)
+    this.dragging = false;
+
+    setNode('cardUpArrow', {
+      fill: this.pg == 0 ? 'none' : this.game.color1
+    })
+    setNode('cardDownArrow', {
+      fill: this.pg == this.npg - 1 ? 'none' : this.game.color1
+    })
+
+  } else if (!e.touches && e.target.tagName != "svg") {
+    // this.game.menuEle.style.display = 'none';
+    // document.getElementById("pauseButton").style.display = 'block';
+    // requestAnimationFrame(this.game.renderLoop)
+  }
+
+
+  document.removeEventListener('touchmove', this.onMouseMove)
+  document.removeEventListener('touchend', this.onTouchEnd)
+}
+
 
 
 LevelSelector.prototype.cardSlideLoop = function (timestamp) {
