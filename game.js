@@ -486,9 +486,6 @@ TangramGame.prototype.onTouchCanvas = function (e) {
     if (!insidePoly(shape.vertices, coord)) continue;
     this.movingShapeIdx = i;
     console.log(e.touches, 'ocuhes')
-    e.touches.map(e => {
-      console.log(e)
-    })
 
     if (e.touches.length < 2) {
       this.prevTouch = [[
