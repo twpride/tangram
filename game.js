@@ -485,6 +485,10 @@ TangramGame.prototype.onTouchCanvas = function (e) {
     const shape = this.shapes[i];
     if (!insidePoly(shape.vertices, coord)) continue;
     this.movingShapeIdx = i;
+    console.log(e.touches, 'ocuhes')
+    e.touches.map(e => {
+      console.log(e)
+    })
 
     if (e.touches.length < 2) {
       this.prevTouch = [[
@@ -505,11 +509,11 @@ TangramGame.prototype.onTouchCanvas = function (e) {
       )
 
     } else { // more than 1 touch point
-      this.prevTouch = e.touches.map(
-        t => {
-          [t.clientX, t.clientY]
-        }
-      )
+
+      this.prevTouch = [
+        [e.touches[0].clientX, e.touches[0].clientY],
+        [e.touches[1].clientX, e.touches[1].clientY]
+      ]
 
       this.longpressId = setTimeout(
         () => {
@@ -591,11 +595,13 @@ TangramGame.prototype.onShapeRotate = function (e) {
   if (e.touches) {
     clearInterval(this.longpressId)
 
-    const currTouch = e.touches.map(
-      t => {
-        [t.clientX, t.clientY]
-      }
-    )
+    const currTouch = [
+      [e.touches[0].clientX, e.touches[0].clientY],
+      [e.touches[1].clientX, e.touches[1].clientY]
+    ]
+
+
+
 
     for (let idx = 0; idx < 2; idx++) {
       start[idx] = this.prevTouch[1][idx] - this.prevTouch[0][idx];
