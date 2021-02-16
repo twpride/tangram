@@ -31,19 +31,19 @@ export function TangramGame() {
     margin: 'auto',
   });
 
-  this.tL = this.canvasWH[1] / 8;
-  this.shapeGeoms = shapeGeoms(this.tL)
-  this.totArea = this.shapeGeoms.reduce((acc, ele) => acc + ele.area, 0);
+  this.tL = Math.min(...this.canvasWH) / 8;
+  // this.shapeGeoms = shapeGeoms(this.tL)
+  // this.totArea = this.shapeGeoms.reduce((acc, ele) => acc + ele.area, 0);
 
 
   this.silCanvWH = [900, 900];
 
-  // this.silContainer = document.getElementById('silcanvas');
+  this.silContainer = document.getElementById('silcanvas');
   this.silCanvas = document.createElement('canvas')
   this.silCanvas.width = this.silCanvWH[0];
   this.silCanvas.height = this.silCanvWH[1];
   this.silCtx = this.silCanvas.getContext('2d');
-  // this.silContainer.appendChild(this.silCanvas);
+  this.silContainer.appendChild(this.silCanvas);
 
   this.ofc = document.createElement('canvas')
   this.ofc.width = this.silCanvWH[0];
@@ -233,9 +233,16 @@ TangramGame.prototype.loadProb = function (probNum) {
   if (shapeString = localStorage.getItem(probNum)) {
     this.shapes = JSON.parse(shapeString)
   } else {
-    this.shapes = JSON.parse(JSON.stringify(this.shapeGeoms))
+    this.shapes = shapeGeoms(this.tL)
+    this.totArea = this.shapes.reduce((acc, ele) => acc + ele.area, 0);
   }
   this.updateCentroidTot();
+  const canvasFactor = this.shapes[0].scale / this.tL;
+
+  if (canvasFactor > 1.1 || canvasFactor < 0.9) {
+
+
+  }
 
   // draw silhouette and thumb, each has different scale factor
   const factor = Math.sqrt(this.totArea / prob[prob.length - 2])

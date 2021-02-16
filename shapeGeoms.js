@@ -8,19 +8,17 @@ export const shapeGeoms = (tL) => {
       type: 1,
       centroid: [-2 / 3 * tL, -2 / 3 * tL],
       orientation: 180,
-      flipped: false,
+      scale: tL,
       vertices: [
-        // [0, -0.04 * tL],
         [0, 0],
-        // [-0.04 * tL, 0],
-        [-1 * tL, 0],
+
         [-1.96 * tL, 0],
         // [-2 * tL, 0],
         [-1.97 * tL, -0.03 * tL],
+
         [-0.03 * tL, -1.97 * tL],
         // [0, -2 * tL],
         [0, -1.96 * tL],
-        [0, -1 * tL],
       ],
       area: (2 * tL) ** 2 / 2
     },
@@ -28,12 +26,10 @@ export const shapeGeoms = (tL) => {
       type: 1,
       centroid: [2 / 3 * tL, -2 / 3 * tL],
       orientation: -90,
-      flipped: false,
+      scale: tL,
       vertices: [
-        // [0.04 * tL, 0],
         [0, 0],
-        // [0, -0.04 * tL],
-        // [0, -1 * tL],
+
         [0, -1.96 * tL],
         // [0, -2 * tL],
         [0.03 * tL, -1.97 * tL],
@@ -41,31 +37,25 @@ export const shapeGeoms = (tL) => {
         [1.97 * tL, -0.03 * tL],
         // [2 * tL, 0],
         [1.96 * tL, 0],
-        // [1 * tL, 0],
       ],
       area: (2 * tL) ** 2 / 2
     },
     {
-      type: 2,
+      type: 2,  // pgram
       centroid: [-1 * tL, 0.5 * tL],
       orientation: 0,
+      scale: tL,
       flipped: false,
       vertices: [
-        // [-1.03 * tL, 0],
         [-1 * tL, 0],
-        // [-0.98 * tL, 0.02 * tL],
 
-        // [-0.5 * tL, 0.5 * tL],
 
         [-0.03 * tL, 0.97 * tL],
         // [0, 1 * tL],
         [-0.04 * tL, 1 * tL],
 
-        // [-0.97 * tL, 1 * tL],
         [-1 * tL, 1 * tL],
-        // [-1.02 * tL, 0.98 * tL],
 
-        [-1.5 * tL, 0.5 * tL],
         [-1.97 * tL, 0.03 * tL],
         // [-2 * tL, 0],
         [-1.96 * tL, 0],
@@ -77,39 +67,27 @@ export const shapeGeoms = (tL) => {
       type: 3,
       centroid: [0.5 * tL, 0.5 * tL],
       orientation: 0,
-      flipped: false,
+      scale: tL,
       vertices: [
-        // [0, 0.04 * tL],
         [0, 0],
-        // [0.04 * tL, 0],
-        // [0.96 * tL, 0],
         [1 * tL, 0],
-        // [1 * tL, 0.04 * tL],
-        // [1 * tL, 0.96 * tL],
         [1 * tL, 1 * tL],
-        // [0.96 * tL, 1 * tL],
-        // [0.04 * tL, 1 * tL],
         [0, 1 * tL],
-        // [0, 0.96 * tL]
       ],
       area: tL ** 2
     },
 
     {
-      type: 4,
+      type: 4, // mid tri
       centroid: [0, 4 / 3 * tL],
       orientation: -135,
-      flipped: false,
+      scale: tL,
       vertices: [
         [0.96 * tL, 1 * tL],
         // [1 * tL, 1 * tL],
         [0.97 * tL, 1.03 * tL],
 
-        [0.5 * tL, 1.5 * tL],
-        // [0.02 * tL, 1.96 * tL],
         [0, 2 * tL],
-        // [-0.02 * tL, 1.96 * tL],
-        [-0.5 * tL, 1.5 * tL],
 
         [-0.97 * tL, 1.03 * tL],
         // [-1 * tL, 1 * tL],
@@ -121,19 +99,17 @@ export const shapeGeoms = (tL) => {
       type: 5,
       centroid: [-1 / 3 * tL, 1 / 3 * tL],
       orientation: 90,
-      flipped: false,
+      scale: tL,
       vertices: [
-        // [-0.04 * tL, 0],
         [0, 0],
-        // [0, 0.04 * tL],
-        [0, 0.7 * tL],
+
         [0, 0.96 * tL],
         // [0, 1 * tL],
         [-0.03 * tL, 0.97 * tL],
+
         [-0.97 * tL, 0.03 * tL],
         // [-1 * tL, 0],
         [-0.96 * tL, 0],
-        [-0.4 * tL, 0],
       ],
       area: tL ** 2 / 2
     },
@@ -142,19 +118,17 @@ export const shapeGeoms = (tL) => {
       type: 5,
       centroid: [4 / 3 * tL, 1 / 3 * tL],
       orientation: 0,
-      flipped: false,
+      scale: tL,
       vertices: [
-        // [1 * tL, 0.04 * tL],
-        // [1.04 * tL, 0],
         [1 * tL, 0],
-        [1.5 * tL, 0],
+
         [1.96 * tL, 0],
         // [2 * tL, 0],
         [1.97 * tL, 0.03 * tL],
+
         [1.03 * tL, 0.97 * tL],
         // [1 * tL, 1 * tL]
         [1 * tL, 0.96 * tL],
-        [1 * tL, 0.2 * tL],
       ],
       area: tL ** 2 / 2
     },
@@ -184,10 +158,12 @@ export const shapeGeoms = (tL) => {
 
   ret.forEach(
     (obj, idx) => {
-      // rotate(obj, 90, [0,0])
-      move(obj, offset)
+      rotate(obj, 90, [0,0])
       obj.centroidOrig = obj.centroid;
       obj.orientationOrig = obj.orientation;
+      move(obj, offset)
+      // obj.centroidOrig = obj.centroid;
+      // obj.orientationOrig = obj.orientation;
       // move(obj, moveArr[idx])
     }
   );
