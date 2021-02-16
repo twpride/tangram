@@ -172,15 +172,15 @@ export const shapeGeoms = (tL) => {
   //   [420+280, -90+570],
   // ];
 
-  let moveArr = [
-    [600+10, 300-10],
-    [600+20, 300-10],
-    [600, 300],
-    [600+20, 300],
-    [600+20, 310],
-    [600+10, 300],
-    [600+30, 300],
-  ];
+  // let moveArr = [
+  //   [600+10, 300-10],
+  //   [600+20, 300-10],
+  //   [600, 300],
+  //   [600+20, 300],
+  //   [600+20, 310],
+  //   [600+10, 300],
+  //   [600+30, 300],
+  // ];
 
   ret.forEach(
     (obj, idx) => {
@@ -188,7 +188,7 @@ export const shapeGeoms = (tL) => {
       move(obj, offset)
       obj.centroidOrig = obj.centroid;
       obj.orientationOrig = obj.orientation;
-      move(obj, moveArr[idx])
+      // move(obj, moveArr[idx])
     }
   );
 
