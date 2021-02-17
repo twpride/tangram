@@ -4,6 +4,7 @@ import { insidePoly, cross, calcPenetration } from "./vectorUtils.js"
 import { problems } from './problemsData.js'
 import { setNode, setClassNodes } from './util.js'
 import { Timer } from './timer.js'
+import { LevelSelector } from './levelSelector.js'
 
 export function TangramGame() {
 
@@ -50,12 +51,16 @@ export function TangramGame() {
   this.octx = this.ofc.getContext('2d');
 
   // this.thumbContainer = document.getElementById('pcanv');
-  this.thumbCanvasWH = [2.5 * this.tL, 2.5 * this.tL];
+  // this.thumbCanvasWH = [2.5 * this.tL, 2.5 * this.tL];
+  const ff = (6.5 - 4 / 100 * this.tL) * this.tL
+  this.thumbCanvasWH = [ff, ff];
+  console.log(this.thumbCanvasWH)
+  // this.thumbCanvasWH = [300, 300];
   this.thumbCanvas = document.createElement('canvas')
   this.thumbCanvas.width = this.thumbCanvasWH[0];
   this.thumbCanvas.height = this.thumbCanvasWH[1];
   this.thumbCtx = this.thumbCanvas.getContext('2d');
-  this.thumbLeftTopOffset = [40, 40];
+  this.thumbLeftTopOffset = [10, 10];
   // this.thumbContainer.appendChild(this.thumbCanvas);
 
 
@@ -164,6 +169,8 @@ export function TangramGame() {
     width: 60, height: 60, fill: this.color2
   })
 
+
+  this.levelSelector = new LevelSelector(this)
 }
 
 
@@ -193,8 +200,8 @@ TangramGame.prototype.stopTimerSaveProgress = function () {
       newProbState = 0;
     }
   }
-  
-  console.log(this.probState,newProbState,'nnnss')
+
+  console.log(this.probState, newProbState, 'nnnss')
   this.progress[this.probState] -= 1;
   this.progress[newProbState] += 1;
 
