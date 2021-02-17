@@ -19,6 +19,7 @@ export function TangramGame() {
 
   this.container = document.getElementById('canv');
   this.canvasWH = [this.container.clientWidth, this.container.clientHeight];
+  console.log(this.canvasWH,"asdffffffffffff")
   this.canvas = document.getElementById('mainCanvas')
   this.canvas.oncontextmenu = () => false;
   this.canvas.width = this.canvasWH[0];
