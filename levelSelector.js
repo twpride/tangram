@@ -5,23 +5,28 @@ import { Bezier } from './cubicBezier.js'
 
 window.Bezier = Bezier
 
-export function LevelSelector(game) {
+export function LevelSelector(game, size) {
   this.game = game;
 
-  const size = 50;
-  const pitch = 75;
+  const pitch = 1.5*size;
 
-  const nrow = 30;
-  const ncol = 6;
+  // const nrow = 30;
+  // const ncol = 6;
+  // this.npg = 6;
 
-  this.npg = 6;
+  const nrow = 40;
+  const ncol = 5;
+  this.npg = 8;
+
 
   this.w_padding = 2;
   this.svg_w = (ncol - 1) * pitch + size + this.w_padding*2;
   
-  this.h_padding = 120;
+  this.h_padding = size;
+  // this.h_padding = 20.5;
   this.svg_h = (nrow/this.npg - 1) * pitch + size + this.h_padding*2;
-
+  
+  console.log(this.svg_w,this.svg_h,'whh')
 
   this.pg = 0;
   this.vbOrigin = 0;
@@ -90,21 +95,6 @@ export function LevelSelector(game) {
     }
   })
 
-
-  this.legendNode = setNode('legend', {
-    width: 320,
-    height: 160,
-    viewBox: `0 0 320 160`,
-    preserveAspectRatio: 'xMinYMin slice',
-    overflow: 'hidden'
-  })
-  Object.assign(this.legendNode.style, {
-    position: 'absolute',
-    bottom: '350px',
-    left: '40px',
-    cursor: 'pointer',
-    'z-index': '80'
-  });
 
   this.game.progress = [0, 0, 0];
 
@@ -195,27 +185,6 @@ export function LevelSelector(game) {
   this.svgNode.addEventListener('mousedown', (e) => {
     document.addEventListener('mousemove', this.onMouseMove)
     document.addEventListener('mouseup', this.onMouseUp)
-  })
-
-  this.svgNode.addEventListener('touchcancel', (e) => {
-    if (e.target.tagName == "svg") return;
-
-    // if (this.hoverNode) {
-    //   this.hoverNode.removeAttribute('stroke')
-    //   this.hoverNode.removeAttribute("stroke-width")
-    // }
-
-    // if (e.target.tagName == "text") {
-    //   e.target.previousElementSibling.setAttribute("stroke", 'black');
-    //   e.target.previousElementSibling.setAttribute("stroke-width", '2');
-    //   this.hoverNode = e.target.previousElementSibling;
-    // } else {
-    //   e.target.setAttribute("stroke", 'black');
-    //   e.target.setAttribute("stroke-width", '2');
-    //   this.hoverNode = e.target;
-    // }
-
-
   })
 
 

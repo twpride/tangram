@@ -11,19 +11,11 @@ export function TangramGame() {
   this.animating = false
   this.backgroundcolor = '#cccccc'
   this.color1 = '#555'
-  // this.color2 = '#ad0f37'
   this.color2 = '#7e0000'
 
-
-
-
   this.container = document.getElementById('canv');
-  this.canvasWH = [this.container.clientWidth, this.container.clientHeight];
-  console.log(this.canvasWH,"asdffffffffffff")
   this.canvas = document.getElementById('mainCanvas')
   this.canvas.oncontextmenu = () => false;
-  this.canvas.width = this.canvasWH[0];
-  this.canvas.height = this.canvasWH[1];
   this.ctx = this.canvas.getContext("2d");
 
   Object.assign(this.canvas.style, {
@@ -32,9 +24,6 @@ export function TangramGame() {
     margin: 'auto',
   });
 
-  this.tL = Math.min(...this.canvasWH) / 8;
-  // this.shapeGeoms = shapeGeoms(this.tL)
-  // this.totArea = this.shapeGeoms.reduce((acc, ele) => acc + ele.area, 0);
 
 
   this.silCanvWH = [900, 900];
@@ -51,22 +40,6 @@ export function TangramGame() {
   this.ofc.height = this.silCanvWH[1];
   this.octx = this.ofc.getContext('2d');
 
-  // this.thumbContainer = document.getElementById('pcanv');
-  // this.thumbCanvasWH = [2.5 * this.tL, 2.5 * this.tL];
-  const ff = (6.5 - 4 / 100 * this.tL) * this.tL
-  this.thumbCanvasWH = [ff, ff];
-  console.log(this.thumbCanvasWH)
-  // this.thumbCanvasWH = [300, 300];
-  this.thumbCanvas = document.createElement('canvas')
-  this.thumbCanvas.width = this.thumbCanvasWH[0];
-  this.thumbCanvas.height = this.thumbCanvasWH[1];
-  this.thumbCtx = this.thumbCanvas.getContext('2d');
-  this.thumbLeftTopOffset = [10, 10];
-  // this.thumbContainer.appendChild(this.thumbCanvas);
-
-
-
-
   this.liftedPiece = false;
   this.saveBoard = false;
   this.timer = new Timer(document.getElementById('timer'));
@@ -80,8 +53,63 @@ export function TangramGame() {
   }
 
 
-  this.loadProb(0)
 
+
+  this.canvasWH = [this.container.clientWidth, this.container.clientHeight];
+  this.canvas.width = this.canvasWH[0];
+  this.canvas.height = this.canvasWH[1];
+  this.tL = Math.min(...this.canvasWH) / 8;
+
+  const thumbCanvasFactor = (5.27 - 27 / 1000 * this.tL) * this.tL
+  this.thumbCanvasWH = [thumbCanvasFactor, thumbCanvasFactor];
+  console.log(this.thumbCanvasWH)
+
+  this.thumbCanvas = document.createElement('canvas')
+  this.thumbCanvas.width = this.thumbCanvasWH[0];
+  this.thumbCanvas.height = this.thumbCanvasWH[1];
+  this.thumbCtx = this.thumbCanvas.getContext('2d');
+  this.thumbLeftTopOffset = [0, 0];
+
+  this.levelSelector = new LevelSelector(this,50)
+
+  for (let ele of document.getElementsByClassName('playpause')) {
+    Object.assign(ele.style, {
+      position: 'absolute',
+      left: `${this.thumbCanvasWH[0]}px`,
+      top: `${this.thumbCanvasWH[1] * .8 - 60}px`,
+      cursor: 'pointer',
+    });
+  }
+  Object.assign(document.getElementById('flipButton').style, {
+    position: 'absolute',
+    left: `${this.thumbCanvasWH[0] + 80}px`,
+    top: `${this.thumbCanvasWH[1] * .8 - 60}px`,
+    cursor: 'pointer',
+  });
+
+  Object.assign(document.getElementById('thumblabel').style, {
+    top: `${this.thumbCanvasWH[1] * .2}px`,
+    left: `${this.thumbCanvasWH[0]}px`,
+  });
+
+
+  Object.assign(document.getElementById('legendWrapper').style, {
+    top: `${this.thumbCanvasWH[1]}px`,
+  });
+
+  Object.assign(document.getElementById('levelSelectorWrapper').style, {
+    bottom: '0px',
+    left: '0px',
+    right: '0px',
+    'margin-left': 'auto',
+    'margin-right': 'auto'
+  });
+
+
+
+
+
+  this.loadProb(0)
 
   this.img = new Image();
   this.img.src = 'woodTexture.jpeg';
@@ -92,17 +120,13 @@ export function TangramGame() {
 
 
 
-
   this.onShapeMove = this.onShapeMove.bind(this);
   this.onShapeRotate = this.onShapeRotate.bind(this);
   this.onShapeMoveEnd = this.onShapeMoveEnd.bind(this);
   this.onShapeRotateEnd = this.onShapeRotateEnd.bind(this);
   this.onClickCanvas = this.onClickCanvas.bind(this);
   this.renderLoop = this.renderLoop.bind(this);
-
   this.onTouchCanvas = this.onTouchCanvas.bind(this);
-
-
 
   document.addEventListener('keydown', e => {
     let pn = this.probNum;
@@ -128,8 +152,6 @@ export function TangramGame() {
   })
 
 
-
-
   this.menuEle = document.getElementById('menu');
 
   document.getElementById("pauseButton").style.display = 'none'
@@ -146,7 +168,6 @@ export function TangramGame() {
     document.getElementById("pauseButton").style.display = 'block'
     requestAnimationFrame(this.renderLoop)
   })
-
 
   document.addEventListener('keydown', (e) => {
     if (e.key != 'Escape') return;
@@ -170,8 +191,10 @@ export function TangramGame() {
     width: 60, height: 60, fill: this.color2
   })
 
+  setNode('legend', {
+    stroke: this.color1
+  })
 
-  this.levelSelector = new LevelSelector(this)
 }
 
 
@@ -229,7 +252,7 @@ TangramGame.prototype.loadProb = function (probNum) {
 
   this.probNum = probNum;
 
-  document.getElementById('probnum').innerHTML = "#" + (probNum + 1);
+  document.getElementById('probnum').innerHTML = '#'+(probNum + 1);
 
   this.timer.reset(
     (this.times[this.probNum] && this.times[this.probNum][0]) || 0
@@ -253,6 +276,8 @@ TangramGame.prototype.loadProb = function (probNum) {
   this.bounds = prob[prob.length - 1]
   const thumbFactor = 0.8 * (this.thumbCanvasWH[0] / 2) / Math.max(...this.bounds.map(a => Math.abs(a)))
 
+  // this.thumbCtx.fillStyle = 'yellow'
+  // this.thumbCtx.fillRect(0, 0, ...this.thumbCanvasWH);
   this.thumbCtx.clearRect(0, 0, ...this.thumbCanvasWH);
   this.octx.fillStyle = "black";
   this.octx.fillRect(0, 0, ...this.silCanvWH);
@@ -542,14 +567,17 @@ TangramGame.prototype.onTouchCanvas = function (e) {
 
     if (this.doubleTapId) { // double
       clearInterval(this.longpressId)
-      document.removeEventListener('touchmove', this.onShapeMove)
-      document.removeEventListener('touchend', this.onShapeMoveEnd)
 
-      document.addEventListener('touchmove', this.onShapeRotate)
-      document.addEventListener('touchend', this.onShapeRotateEnd)
+      // document.removeEventListener('touchmove', this.onShapeMove)
+      // document.removeEventListener('touchend', this.onShapeMoveEnd)
+
+      // document.addEventListener('touchmove', this.onShapeRotate)
+      // document.addEventListener('touchend', this.onShapeRotateEnd)
+
       // flipPoints(shape)
 
-      this.prevCoord
+      rotate(shape, 45)
+
     } else {
 
       this.longpressId = setTimeout(

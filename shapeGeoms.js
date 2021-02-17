@@ -129,35 +129,28 @@ export const shapeGeoms = (tL) => {
 
   let offset = [2 * tL, 2 * tL];
 
-  // let moveArr = [
-  //   [10+280, 10+570],
-  //   [30+280, 10+570],
-  //   [360+280, -90+570],
-  //   [400+280, -90+570],
-  //   [640+280, -170+570],
-  //   [380+280, -90+570],
-  //   [420+280, -90+570],
-  // ];
+
 
   let moveArr = [
-    [6*tL+0.1*tL, 3*tL-0.1*tL],
-    [6*tL+0.1*tL, 3*tL-0.1*tL],
-    [6*tL+0.1*tL, 3*tL-0.1*tL],
-    [6*tL+0.1*tL, 3*tL-0.1*tL],
-    [6*tL+0.1*tL, 3*tL-0.1*tL],
-    [6*tL+0.1*tL, 3*tL-0.1*tL],
-    [6*tL+0.1*tL, 3*tL-0.1*tL],
+    [(-.02)*tL, (-.02)*tL],
+    [(.02)*tL, (-.02)*tL],
+    [(-.06)*tL, (.02)*tL], //pgram
+    [(.02)*tL, (.02)*tL], // square
+    [(.0)*tL, (.06)*tL], //mid tri
+    [(-.02)*tL, (.02)*tL],
+    [(.06)*tL, (.02)*tL],
   ];
+
 
   ret.forEach(
     (obj, idx) => {
-      rotate(obj, 90, [0,0])
-      // move(obj, offset)
+      // rotate(obj, 90, [0,0])
+      move(obj, offset)
       obj.centroidOrig = obj.centroid;
       obj.orientationOrig = obj.orientation;
       // obj.centroidOrig = obj.centroid;
       // obj.orientationOrig = obj.orientation;
-      // move(obj, moveArr[idx])
+      move(obj, moveArr[idx])
     }
   );
 
