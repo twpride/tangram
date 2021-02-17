@@ -23,12 +23,6 @@ html, body, #root{
 
 
 body {
-  /* height: 100%; */
-  /* width: 100%; */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   background-color: #ddd;
 }
 
@@ -37,17 +31,10 @@ body {
   position: absolute;
   top: 0; left: 0; bottom: 0; right: 0;
 
-  /* height: 800px; */
-  /* width: 1200px; */
-  height: 95%;
-  width: 95%;
+  height: min(800px,95%);
+  width: min(1200px,95%);
 }
 
-
-/* #flip {
-  position: absolute;
-  top: 200px; right: 200px;
-} */
 
 
 
@@ -58,8 +45,9 @@ body {
   position: absolute;
   top: 0; left: 0; bottom: 0; right: 0;
 
-  height: 800px;
-  width: 1200px;
+  height: min(800px,95%);
+  width: min(1200px,95%);
+
   border-radius: 15px;
   display: flex;
   justify-content: center;

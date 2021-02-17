@@ -177,10 +177,10 @@ export function LevelSelector(game) {
     ];
     const val = this.pg * nrow * ncol / this.npg + Math.floor(coord[1] / pitch) * nrow / this.npg + Math.floor(coord[0] / pitch)
     this.game.loadProb(val)
-    requestAnimationFrame(this.game.renderLoop)
 
+    this.game.renderLoop() // we don't call requestAnimationFram because we need fcn side effect immediately
 
-    if (this.sum < 5000) {
+    if (this.game.sum < 5000) {
       this.game.probState = 2;
     } else {
       if (this.game.timer.total_S > 0) {
@@ -189,7 +189,6 @@ export function LevelSelector(game) {
         this.game.probState = 0;
       }
     }
-
   })
 
 
@@ -300,7 +299,6 @@ LevelSelector.prototype.onMouseMove = function (e) {
 }
 
 LevelSelector.prototype.onMouseUp = function (e) {
-  console.log(e)
   if (this.dragging) {
     this.pg = Math.round(this.vbOrigin / this.svg_h);
     requestAnimationFrame(this.cardSlideLoop)

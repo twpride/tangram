@@ -8,7 +8,6 @@ export const shapeGeoms = (tL) => {
       type: 1,
       centroid: [-2 / 3 * tL, -2 / 3 * tL],
       orientation: 180,
-      scale: tL,
       vertices: [
         [0, 0],
 
@@ -26,7 +25,6 @@ export const shapeGeoms = (tL) => {
       type: 1,
       centroid: [2 / 3 * tL, -2 / 3 * tL],
       orientation: -90,
-      scale: tL,
       vertices: [
         [0, 0],
 
@@ -44,7 +42,6 @@ export const shapeGeoms = (tL) => {
       type: 2,  // pgram
       centroid: [-1 * tL, 0.5 * tL],
       orientation: 0,
-      scale: tL,
       flipped: false,
       vertices: [
         [-1 * tL, 0],
@@ -67,7 +64,6 @@ export const shapeGeoms = (tL) => {
       type: 3,
       centroid: [0.5 * tL, 0.5 * tL],
       orientation: 0,
-      scale: tL,
       vertices: [
         [0, 0],
         [1 * tL, 0],
@@ -81,7 +77,6 @@ export const shapeGeoms = (tL) => {
       type: 4, // mid tri
       centroid: [0, 4 / 3 * tL],
       orientation: -135,
-      scale: tL,
       vertices: [
         [0.96 * tL, 1 * tL],
         // [1 * tL, 1 * tL],
@@ -99,7 +94,6 @@ export const shapeGeoms = (tL) => {
       type: 5,
       centroid: [-1 / 3 * tL, 1 / 3 * tL],
       orientation: 90,
-      scale: tL,
       vertices: [
         [0, 0],
 
@@ -118,7 +112,6 @@ export const shapeGeoms = (tL) => {
       type: 5,
       centroid: [4 / 3 * tL, 1 / 3 * tL],
       orientation: 0,
-      scale: tL,
       vertices: [
         [1 * tL, 0],
 
@@ -146,22 +139,22 @@ export const shapeGeoms = (tL) => {
   //   [420+280, -90+570],
   // ];
 
-  // let moveArr = [
-  //   [600+10, 300-10],
-  //   [600+20, 300-10],
-  //   [600, 300],
-  //   [600+20, 300],
-  //   [600+20, 310],
-  //   [600+10, 300],
-  //   [600+30, 300],
-  // ];
+  let moveArr = [
+    [6*tL+0.1*tL, 3*tL-0.1*tL],
+    [6*tL+0.1*tL, 3*tL-0.1*tL],
+    [6*tL+0.1*tL, 3*tL-0.1*tL],
+    [6*tL+0.1*tL, 3*tL-0.1*tL],
+    [6*tL+0.1*tL, 3*tL-0.1*tL],
+    [6*tL+0.1*tL, 3*tL-0.1*tL],
+    [6*tL+0.1*tL, 3*tL-0.1*tL],
+  ];
 
   ret.forEach(
     (obj, idx) => {
       rotate(obj, 90, [0,0])
+      // move(obj, offset)
       obj.centroidOrig = obj.centroid;
       obj.orientationOrig = obj.orientation;
-      move(obj, offset)
       // obj.centroidOrig = obj.centroid;
       // obj.orientationOrig = obj.orientation;
       // move(obj, moveArr[idx])

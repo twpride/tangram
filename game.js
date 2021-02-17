@@ -10,9 +10,8 @@ export function TangramGame() {
   this.animating = false
   this.backgroundcolor = '#cccccc'
   this.color1 = '#555'
-  this.color2 = '#ad0f37'
-
-  document.getElementById("canv").style.backgroundColor = this.backgroundcolor
+  // this.color2 = '#ad0f37'
+  this.color2 = '#7e0000'
 
 
 
@@ -38,12 +37,12 @@ export function TangramGame() {
 
   this.silCanvWH = [900, 900];
 
-  this.silContainer = document.getElementById('silcanvas');
+  // this.silContainer = document.getElementById('silcanvas');
   this.silCanvas = document.createElement('canvas')
   this.silCanvas.width = this.silCanvWH[0];
   this.silCanvas.height = this.silCanvWH[1];
   this.silCtx = this.silCanvas.getContext('2d');
-  this.silContainer.appendChild(this.silCanvas);
+  // this.silContainer.appendChild(this.silCanvas);
 
   this.ofc = document.createElement('canvas')
   this.ofc.width = this.silCanvWH[0];
@@ -158,11 +157,11 @@ export function TangramGame() {
 
 
   setClassNodes('playpause', {
-    width: 50, height: 50, fill: this.color2
+    width: 60, height: 60, fill: this.color2
   })
 
   setNode('flipButton', {
-    width: 70, height: 70, fill: this.color2
+    width: 60, height: 60, fill: this.color2
   })
 
 }
@@ -171,7 +170,7 @@ export function TangramGame() {
 TangramGame.prototype.stopTimerSaveProgress = function () {
   this.timer.stop()
   if (this.saveBoard) {
-    localStorage.setItem(this.probNum, JSON.stringify(this.shapes))
+    localStorage.setItem(this.probNum, JSON.stringify([this.tL, ...this.shapes]))
   }
   this.times[this.probNum] = [this.timer.total_S, this.sum];
 
@@ -194,7 +193,8 @@ TangramGame.prototype.stopTimerSaveProgress = function () {
       newProbState = 0;
     }
   }
-
+  
+  console.log(this.probState,newProbState,'nnnss')
   this.progress[this.probState] -= 1;
   this.progress[newProbState] += 1;
 
@@ -229,23 +229,19 @@ TangramGame.prototype.loadProb = function (probNum) {
 
   // set tile positions, load from local storage if it was saved if not load default
   this.saveBoard = false;
-  let shapeString;
+  let shapeString, shapeTL;
   if (shapeString = localStorage.getItem(probNum)) {
-    this.shapes = JSON.parse(shapeString)
+    [shapeTL, ...this.shapes] = JSON.parse(shapeString)
+    this.reScaleShapes(this.tL / shapeTL)
   } else {
     this.shapes = shapeGeoms(this.tL)
-    this.totArea = this.shapes.reduce((acc, ele) => acc + ele.area, 0);
   }
+
+  this.rePositionShapes()
   this.updateCentroidTot();
-  const canvasFactor = this.shapes[0].scale / this.tL;
-
-  if (canvasFactor > 1.1 || canvasFactor < 0.9) {
-
-
-  }
 
   // draw silhouette and thumb, each has different scale factor
-  const factor = Math.sqrt(this.totArea / prob[prob.length - 2])
+  const factor = Math.sqrt(80000 / prob[prob.length - 2])
   this.bounds = prob[prob.length - 1]
   const thumbFactor = 0.8 * (this.thumbCanvasWH[0] / 2) / Math.max(...this.bounds.map(a => Math.abs(a)))
 
@@ -278,6 +274,38 @@ TangramGame.prototype.loadProb = function (probNum) {
 
 
 
+TangramGame.prototype.reScaleShapes = function (factor) {
+  for (let i = 0; i < this.shapes.length; i++) {
+    const shape = this.shapes[i];
+    shape.vertices = shape.vertices
+      .map(ele => ele.map(e => e * factor));
+    shape.centroid = shape.centroid
+      .map(e => e * factor);
+    shape.centroidOrig = shape.centroidOrig
+      .map(e => e * factor);
+    shape.area = shape.area * factor ** 2;
+  }
+}
+
+TangramGame.prototype.rePositionShapes = function () {
+  const maxXY = [0, 0];
+  for (let i = 0; i < this.shapes.length; i++) {
+    const shape = this.shapes[i];
+    for (let j = 0; j < shape.vertices.length; j++) {
+      maxXY[0] = Math.max(maxXY[0], shape.vertices[j][0]);
+      maxXY[1] = Math.max(maxXY[1], shape.vertices[j][1]);
+    }
+  }
+
+  const delta = this.canvasWH.map((ele, idx) => (
+    ele - maxXY[idx]
+  ))
+
+  for (let i = 0; i < this.shapes.length; i++) {
+    const shape = this.shapes[i];
+    move(shape, delta);
+  }
+}
 
 TangramGame.prototype.renderLoop = function () {
 
@@ -297,12 +325,12 @@ TangramGame.prototype.renderLoop = function () {
       ...shape.vertices[0]
     )
     this.silCtx.moveTo(
-      ...shape.vertices[0].map((ele, idx) => ele - this.centroidTot[idx] + this.silCanvWH[idx] / 2)
+      ...shape.vertices[0].map((ele, idx) => (ele - this.centroidTot[idx]) * 100 / this.tL + this.silCanvWH[idx] / 2)
     )
-    for (let j = 1; j < shape.vertices.length; j++) {
+    for (let j = 1; j < shape.vertices.length; j++) { // !!!! loop starts at 1, see above init point 
       this.ctx.lineTo(...shape.vertices[j])
       this.silCtx.lineTo(...shape.vertices[j].map(
-        (ele, idx) => ele - this.centroidTot[idx] + this.silCanvWH[idx] / 2
+        (ele, idx) => (ele - this.centroidTot[idx]) * 100 / this.tL + this.silCanvWH[idx] / 2
       )
       )
     }
@@ -432,13 +460,19 @@ TangramGame.prototype.checkCollisions = function (movingShapeIdx, delta) {
   return moveBack;
 }
 
-TangramGame.prototype.updateCentroidTot = function () {
-  this.centroidTot = this.shapes.reduce(
-    (acc, ele) => acc.map(
-      (e, idx) => e + ele.centroid[idx] * ele.area
-    ),
-    [0, 0]
-  ).map(ele => ele / this.totArea)
+TangramGame.prototype.updateCentroidTot = function (factor) {
+  if (factor) {
+    this.centroidTot = this.centroidTot
+      .map(e => e * factor);
+  } else {
+    const totArea = this.shapes.reduce((acc, ele) => acc + ele.area, 0)
+    this.centroidTot = this.shapes.reduce(
+      (acc, ele) => acc.map(
+        (e, idx) => e + ele.centroid[idx] * ele.area
+      ),
+      [0, 0]
+    ).map(ele => ele / totArea)
+  }
 }
 
 TangramGame.prototype.onClickCanvas = function (e) {
