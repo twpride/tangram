@@ -187,9 +187,9 @@ LevelSelector.prototype.createSelectorSvg = function (size) {
 
   if (this.game.canvas.height < 648) {
     Object.assign(document.getElementById('legendWrapper').style, {
-      top: `${this.game.thumbCanvasWH[1]-50}px`,
+      top: `${this.game.thumbCanvasWH[1] - 50}px`,
     });
-    leftOffset = this.game.thumbCanvasWH[0]+60+20;
+    leftOffset = this.game.thumbCanvasWH[0] + 60 + 20;
     topOffset = 0;
 
     if (this.game.canvas.height < 450) {
@@ -197,8 +197,6 @@ LevelSelector.prototype.createSelectorSvg = function (size) {
     } else {
       topOffset = 10;
     }
-
-
 
   } else {
     if (this.game.canvas.width < 450) {
@@ -208,6 +206,7 @@ LevelSelector.prototype.createSelectorSvg = function (size) {
     }
   }
 
+  console.log(topOffset, 'wtf')
 
   Object.assign(this.wrapper.style, {
     height: this.svg_w + 'px',

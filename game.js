@@ -179,16 +179,49 @@ export function TangramGame() {
         this.canvas.height = this.canvasWH[1];
 
 
+        // let leftOffset;
+        // if (this.canvas.width < 450) {
+        //   leftOffset = (this.canvas.width - this.svg_h) / 2;
+        // } else {
+        //   leftOffset = 0;
+        // }
+        // Object.assign(this.levelSelector.wrapper.style, {
+        //   left: leftOffset + 'px',
+        // });
+
+
+
+
         let leftOffset;
-        if (this.canvas.width < 450) {
-          leftOffset = (this.canvas.width - this.svg_h) / 2;
+        let topOffset = this.thumbCanvasWH[1] + 94 + 20;
+      
+        if (this.canvas.height < 648) {
+          Object.assign(document.getElementById('legendWrapper').style, {
+            top: `${this.thumbCanvasWH[1]-50}px`,
+          });
+          leftOffset = this.thumbCanvasWH[0]+60+20;
+          topOffset = 0;
+      
+          if (this.canvas.height < 450) {
+            topOffset = (this.canvas.height - this.levelSelector.svg_w) / 2;
+          } else {
+            topOffset = 10;
+          }
+      
         } else {
-          leftOffset = 0;
+          if (this.canvas.width < 450) {
+            leftOffset = (this.canvas.width - this.svg_h) / 2;
+          } else {
+            leftOffset = 0;
+          }
         }
+
         Object.assign(this.levelSelector.wrapper.style, {
+          top: topOffset + 'px',
           left: leftOffset + 'px',
         });
         
+        // console.log(this.levelSelector.wrapper.style,'wtf')
 
         const newTL = Math.min(...this.canvasWH) / 8;
         this.reScaleShapes(newTL/this.tL)
