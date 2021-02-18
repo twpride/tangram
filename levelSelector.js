@@ -181,16 +181,36 @@ LevelSelector.prototype.createSelectorSvg = function (size) {
 
 
   let leftOffset;
-  if (this.game.canvas.width < 450) {
-    leftOffset = (this.game.canvas.width - this.svg_h) / 2;
+  let topOffset = this.game.thumbCanvasWH[1] + 94 + 20;
+
+  if (this.game.canvas.height < 648) {
+    Object.assign(document.getElementById('legendWrapper').style, {
+      top: `${this.game.thumbCanvasWH[1]-50}px`,
+    });
+    leftOffset = this.game.thumbCanvasWH[0]+60+20;
+    topOffset = 0;
+
+    if (this.game.canvas.height < 450) {
+      topOffset = (this.game.canvas.height - this.svg_w) / 2;
+    } else {
+      topOffset = 10;
+    }
+
+
+
   } else {
-    leftOffset = 0;
+    if (this.game.canvas.width < 450) {
+      leftOffset = (this.game.canvas.width - this.svg_h) / 2;
+    } else {
+      leftOffset = 0;
+    }
   }
+
 
   Object.assign(this.wrapper.style, {
     height: this.svg_w + 'px',
     width: this.svg_h + 'px',
-    top: `${this.game.thumbCanvasWH[1] + 94 + 20}px`,
+    top: topOffset + 'px',
     left: leftOffset + 'px',
     // border: 'solid 1px black'
   });

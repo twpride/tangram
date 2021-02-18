@@ -188,6 +188,7 @@ export function TangramGame() {
         Object.assign(this.levelSelector.wrapper.style, {
           left: leftOffset + 'px',
         });
+        
 
         const newTL = Math.min(...this.canvasWH) / 8;
         this.reScaleShapes(newTL/this.tL)
@@ -647,7 +648,6 @@ TangramGame.prototype.onTouchCanvas = function (e) {
 
       this.longpressId = setTimeout(
         () => {
-          console.log('aaaaasdf')
           this.shapes.push(...this.shapes.splice(i, 1))
           this.liftedPiece = true;
           this.movingShapeIdx = this.shapes.length - 1;
