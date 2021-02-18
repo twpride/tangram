@@ -15,7 +15,7 @@
       <div id="timer"></div>
     </div>
     <canvas id='mainCanvas'></canvas>
-    <svg id='pauseButton' class="playpause" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24"
+    <svg id='pauseButton' class="playpause canvButton" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24"
       height="24" viewBox="0 0 24 24" width="24">
       <g>
         <rect fill="none" height="24" width="24" />
@@ -27,7 +27,7 @@
         </g>
       </g>
     </svg>
-    <svg id='flipButton' xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    <svg id='flipButton' class='canvButton' xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
       <path
         d="M 12 2 A 10 10 0 0 0 2 12 A 10 10 0 0 0 12 22 A 10 10 0 0 0 22 12 A 10 10 0 0 0 12 2 z M 9.4453125 5.25 L 9.4453125 12.546875 L 5.796875 16.195312 L 5.796875 8.8984375 L 9.4453125 5.25 z M 11.634766 5.25 L 12.365234 5.25 L 12.365234 7.4394531 L 11.634766 7.4394531 L 11.634766 5.25 z M 14.554688 5.25 L 18.203125 8.8984375 L 18.203125 16.195312 L 14.554688 12.546875 L 14.554688 5.25 z M 11.634766 9.6289062 L 12.365234 9.6289062 L 12.365234 11.818359 L 11.634766 11.818359 L 11.634766 9.6289062 z M 11.634766 14.005859 L 12.365234 14.005859 L 12.365234 16.195312 L 11.634766 16.195312 L 11.634766 14.005859 z M 7.0976562 15.447266 L 9.4199219 16.220703 L 8.9042969 16.738281 A 4.3785881 4.3783723 0 0 0 12 18.019531 A 4.3785881 4.3783723 0 0 0 15.095703 16.738281 L 14.580078 16.220703 L 16.902344 15.447266 L 16.126953 17.769531 L 15.611328 17.253906 A 5.1080978 5.1081004 0 0 1 12 18.75 A 5.1080978 5.1081004 0 0 1 8.3886719 17.253906 L 7.8730469 17.769531 L 7.0976562 15.447266 z "
         id="path1380" />
@@ -84,13 +84,11 @@
 
 
     <div id='levelSelectorWrapper'>
-      <svg id='levelSelector'></svg>
       <svg id='cardUpArrow' class="cardArrow" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24"
         width="24">
         <path d="M14 7l-5 5 5 5V7z" />
         <path d="M24 0v24H0V0h24z" fill="none" />
       </svg>
-      <div id='arrowSpacer'></div>
       <svg id='cardDownArrow' class="cardArrow" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24"
         width="24">
         <path d="M10 17l5-5-5-5v10z" />
