@@ -22,8 +22,26 @@ export function LevelSelector(game, size) {
 
   this.createSelectorSvg(size)
 
-  document.getElementById('solvedString').innerHTML = this.game.progress[2] + " solved";
-  document.getElementById('inProgressString').innerHTML = this.game.progress[1] + " in progress";
+  const red = (_,val) => {
+    let ret;
+    ret = "<span style='color:blue'>" + val.toString() + "</span>"
+    return ret;
+  }
+
+
+  console.log(
+    red`${543}`
+  )
+  // document.getElementById('solvedString').innerHTML = red`${this.game.progress[2]}` + " solved";
+  // document.getElementById('inProgressString').innerHTML = red`${this.game.progress[1]}` + " in progress";
+  // document.getElementById('notStartedString').innerHTML = red`${this.game.progress[0]}` + " not started";
+
+  // document.getElementById('solvedString').innerHTML = this.game.progress[2] + " solved";
+  // document.getElementById('inProgressString').innerHTML = this.game.progress[1] + " in progress";
+  // document.getElementById('notStartedString').innerHTML = this.game.progress[0] + " not started";
+
+  document.getElementById('solvedString').innerHTML = 111111 + " solved";
+  document.getElementById('inProgressString').innerHTML = 100000 + " in progress";
   document.getElementById('notStartedString').innerHTML = this.game.progress[0] + " not started";
 
   document.getElementById('cardUpArrow').addEventListener('click', (e) => {
@@ -183,41 +201,31 @@ LevelSelector.prototype.createSelectorSvg = function (size) {
 
 
   let leftOffset;
-  let topOffset = this.game.thumbCanvasWH[1] + 94 + 20-50;
 
-  Object.assign(document.getElementById('legendWrapper').style, {
-    top: `${this.game.thumbCanvasWH[1] - 50}px`,
-  });
-  if (this.game.canvas.height < 598) {
-    // Object.assign(document.getElementById('legendWrapper').style, {
-      // top: `${this.game.thumbCanvasWH[1] - 50}px`,
-    // });
-    leftOffset = this.game.thumbCanvasWH[0] + 60 + 20;
-    topOffset = 0;
+
+  const styleObj = {};
+  styleObj.height = this.svg_w;
+  styleObj.width = this.svg_h;
+
+  if (this.game.canvas.height < 628) {
+    styleObj.left = this.game.thumbCanvasWH[0] + 60 + 20;
 
     if (this.game.canvas.height < 450) {
-      topOffset = (this.game.canvas.height - this.svg_w) / 2;
+      styleObj.top = (this.game.canvas.height - this.svg_w) / 2;
     } else {
-      topOffset = 10;
+      styleObj.top = 10;
     }
-
   } else {
     if (this.game.canvas.width < 450) {
-      leftOffset = (this.game.canvas.width - this.svg_h) / 2;
+      styleObj.left = (this.game.canvas.width - this.svg_h) / 2;
     } else {
-      leftOffset = 0;
+      styleObj.left = 0;
     }
+    styleObj.top = this.game.thumbCanvasWH[1] + 94 - 20 + 10;
   }
 
-  console.log(topOffset, 'wtf')
-
-  Object.assign(this.wrapper.style, {
-    height: this.svg_w + 'px',
-    width: this.svg_h + 'px',
-    top: topOffset + 'px',
-    left: leftOffset + 'px',
-    // border: 'solid 1px black'
-  });
+  Object.keys(styleObj).forEach(key => { styleObj[key] += 'px' });
+  Object.assign(this.wrapper.style, styleObj);
 
   this.game.progress = [0, 0, 0];
 

@@ -17,3 +17,8 @@ export const setClassNodes = function (cl, v) {
     for (var p in v) node.setAttribute(p, v[p]);
   }
 }
+
+
+export const colorNum = function (val, color, nDigits) {
+
+}

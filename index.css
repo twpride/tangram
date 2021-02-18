@@ -155,4 +155,7 @@ svg text {
 }
 #legendCateg > div{
   height: 20px;
+  /* font-size: 1px; */
+  display: flex;
+  align-items: center;
 }

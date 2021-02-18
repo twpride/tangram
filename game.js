@@ -179,48 +179,36 @@ export function TangramGame() {
         this.canvas.height = this.canvasWH[1];
 
         let leftOffset;
-        let topOffset = this.thumbCanvasWH[1] + 94 + 20-50;
 
-        Object.assign(document.getElementById('legendWrapper').style, {
-          top: `${this.thumbCanvasWH[1] - 50}px`,
-        });
+        const styleObj = {}
 
-        if (this.canvas.height < 598) {
-          // Object.assign(document.getElementById('legendWrapper').style, {
-            // top: `${this.thumbCanvasWH[1]-50}px`,
-          // });
-          leftOffset = this.thumbCanvasWH[0]+60+20;
-          topOffset = 0;
-      
+        if (this.canvas.height < 628) {
+          styleObj.left = this.thumbCanvasWH[0] + 60 + 20;
           if (this.canvas.height < 450) {
-            topOffset = (this.canvas.height - this.levelSelector.svg_w) / 2;
+            styleObj.top = (this.canvas.height - this.levelSelector.svg_w) / 2;
           } else {
-            topOffset = 10;
+            styleObj.top = 10;
           }
-      
         } else {
-          Object.assign(document.getElementById('legendWrapper').style, {
-            top: `${this.thumbCanvasWH[1]-50}px`,
-          })
           if (this.canvas.width < 450) {
-            leftOffset = (this.canvas.width - this.svg_h) / 2;
+            styleObj.left = (this.canvas.width - this.svg_h) / 2;
           } else {
-            leftOffset = 0;
+            styleObj.left = 0
           }
+          styleObj.top = this.thumbCanvasWH[1] + 94 - 20 + 10
         }
 
-        Object.assign(this.levelSelector.wrapper.style, {
-          top: topOffset + 'px',
-          left: leftOffset + 'px',
-        });
-        
+        Object.keys(styleObj).forEach(key => { styleObj[key] += 'px' });
+
+        Object.assign(this.levelSelector.wrapper.style, styleObj);
+
         const newTL = Math.min(...this.canvasWH) / 8;
-        this.reScaleShapes(newTL/this.tL)
+        this.reScaleShapes(newTL / this.tL)
         this.tL = newTL;
-      
+
         this.rePositionShapes()
         this.updateCentroidTot();
-      
+
         requestAnimationFrame(this.renderLoop)
       }
       , 100
@@ -273,7 +261,7 @@ TangramGame.prototype.drawThumbComps = function () {
 
 
   Object.assign(document.getElementById('legendWrapper').style, {
-    top: `${this.thumbCanvasWH[1]}px`,
+    top: `${this.thumbCanvasWH[1] - 20}px`,
   });
 
   setNode('legend', {
@@ -314,9 +302,13 @@ TangramGame.prototype.stopTimerSaveProgress = function () {
 
   this.levelSelector.selectorSvg.childNodes[this.probNum * 2].setAttribute('fill', color);
 
-  document.getElementById('solvedString').innerHTML = this.progress[2] + " solved";
-  document.getElementById('inProgressString').innerHTML = this.progress[1] + " in progress";
-  document.getElementById('notStartedString').innerHTML = this.progress[0] + " not started";
+  const red = (_,val) => "<span style='color:blue'>" + val.toString() + "</span>";
+
+  console.log(red`${7456}`)
+
+  document.getElementById('solvedString').innerHTML = red`${this.progress[2]}` + " solved";
+  document.getElementById('inProgressString').innerHTML = red`${this.progress[1]}` + " in progress";
+  document.getElementById('notStartedString').innerHTML = red`${this.progress[0]}` + " not started";
 
 }
 
@@ -485,7 +477,7 @@ TangramGame.prototype.renderLoop = function () {
     this.menuEle.style.display != 'none'
     && (!this.times[this.probNum] || this.times[this.probNum][1] > 5000)
   ) {
-    this.ctx.filter = `blur(14px)`
+    // this.ctx.filter = `blur(14px)`
     this.ctx.drawImage(this.thumbCanvas, ...this.thumbLeftTopOffset);
     this.ctx.filter = `none`
   } else {
