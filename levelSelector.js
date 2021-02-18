@@ -110,7 +110,9 @@ export function LevelSelector(game, size) {
     if (val == this.game.probNum) {
       console.log('hhhddding')
       this.game.menuEle.style.display = 'none';
-      document.getElementById("pauseButton").style.display = 'block';
+      for (let ele of document.getElementsByClassName('canvButton')) {
+        Object.assign(ele.style, { display: 'block' });
+      }
       requestAnimationFrame(this.game.renderLoop)
     } else {
 
