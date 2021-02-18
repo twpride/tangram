@@ -178,20 +178,6 @@ export function TangramGame() {
         this.canvas.width = this.canvasWH[0];
         this.canvas.height = this.canvasWH[1];
 
-
-        // let leftOffset;
-        // if (this.canvas.width < 450) {
-        //   leftOffset = (this.canvas.width - this.svg_h) / 2;
-        // } else {
-        //   leftOffset = 0;
-        // }
-        // Object.assign(this.levelSelector.wrapper.style, {
-        //   left: leftOffset + 'px',
-        // });
-
-
-
-
         let leftOffset;
         let topOffset = this.thumbCanvasWH[1] + 94 + 20;
       
@@ -221,8 +207,6 @@ export function TangramGame() {
           left: leftOffset + 'px',
         });
         
-        // console.log(this.levelSelector.wrapper.style,'wtf')
-
         const newTL = Math.min(...this.canvasWH) / 8;
         this.reScaleShapes(newTL/this.tL)
         this.tL = newTL;
@@ -245,14 +229,11 @@ TangramGame.prototype.drawThumbComps = function () {
 
   setClassNodes('playpause', {
     width: 60, height: 60, fill: this.color2,
-    // transform:"scale(0.5)"
   })
   setNode('flipButton', {
     width: 60, height: 60, fill: this.color2
   })
 
-
-  // const thumbCanvasFactor = (5.27 - 27 / 1000 * this.tL) * this.tL
   const thumbCanvasFactor = 250;
   this.thumbCanvasWH = [thumbCanvasFactor, thumbCanvasFactor];
 
@@ -531,10 +512,10 @@ TangramGame.prototype.renderLoop = function () {
     this.timer.stop()
   }
 
-  this.ctx.fillStyle = 'green';
+  // this.ctx.fillStyle = 'green';
   // this.ctx.fillRect(...this.centroidTot, 2, 2)
-  this.ctx.fillText(this.sum.toString(), 50, 550);
-  this.ctx.fillText(this.probNum.toString(), 50, 500);
+  // this.ctx.fillText(this.sum.toString(), 50, 550);
+  // this.ctx.fillText(this.probNum.toString(), 50, 500);
 
   if (this.animating) {
     requestAnimationFrame(this.renderLoop);
