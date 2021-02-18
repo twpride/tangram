@@ -183,12 +183,15 @@ LevelSelector.prototype.createSelectorSvg = function (size) {
 
 
   let leftOffset;
-  let topOffset = this.game.thumbCanvasWH[1] + 94 + 20;
+  let topOffset = this.game.thumbCanvasWH[1] + 94 + 20-50;
 
-  if (this.game.canvas.height < 648) {
-    Object.assign(document.getElementById('legendWrapper').style, {
-      top: `${this.game.thumbCanvasWH[1] - 50}px`,
-    });
+  Object.assign(document.getElementById('legendWrapper').style, {
+    top: `${this.game.thumbCanvasWH[1] - 50}px`,
+  });
+  if (this.game.canvas.height < 598) {
+    // Object.assign(document.getElementById('legendWrapper').style, {
+      // top: `${this.game.thumbCanvasWH[1] - 50}px`,
+    // });
     leftOffset = this.game.thumbCanvasWH[0] + 60 + 20;
     topOffset = 0;
 

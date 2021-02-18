@@ -179,12 +179,16 @@ export function TangramGame() {
         this.canvas.height = this.canvasWH[1];
 
         let leftOffset;
-        let topOffset = this.thumbCanvasWH[1] + 94 + 20;
-      
-        if (this.canvas.height < 648) {
-          Object.assign(document.getElementById('legendWrapper').style, {
-            top: `${this.thumbCanvasWH[1]-50}px`,
-          });
+        let topOffset = this.thumbCanvasWH[1] + 94 + 20-50;
+
+        Object.assign(document.getElementById('legendWrapper').style, {
+          top: `${this.thumbCanvasWH[1] - 50}px`,
+        });
+
+        if (this.canvas.height < 598) {
+          // Object.assign(document.getElementById('legendWrapper').style, {
+            // top: `${this.thumbCanvasWH[1]-50}px`,
+          // });
           leftOffset = this.thumbCanvasWH[0]+60+20;
           topOffset = 0;
       
@@ -195,6 +199,9 @@ export function TangramGame() {
           }
       
         } else {
+          Object.assign(document.getElementById('legendWrapper').style, {
+            top: `${this.thumbCanvasWH[1]-50}px`,
+          })
           if (this.canvas.width < 450) {
             leftOffset = (this.canvas.width - this.svg_h) / 2;
           } else {
