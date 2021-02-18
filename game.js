@@ -173,10 +173,10 @@ export function TangramGame() {
     clearTimeout(resizeTimeout)
     resizeTimeout = setTimeout(
       () => {
+
         this.canvasWH = [this.container.clientWidth, this.container.clientHeight];
         this.canvas.width = this.canvasWH[0];
         this.canvas.height = this.canvasWH[1];
-        this.tL = Math.min(...this.canvasWH) / 8;
 
 
         let leftOffset;
@@ -185,15 +185,17 @@ export function TangramGame() {
         } else {
           leftOffset = 0;
         }
-      
         Object.assign(this.levelSelector.wrapper.style, {
           left: leftOffset + 'px',
         });
 
-        this.drawThumbComps()
-        this.levelSelector.createSelectorSvg(40)
-
-        this.loadProb()
+        const newTL = Math.min(...this.canvasWH) / 8;
+        this.reScaleShapes(newTL/this.tL)
+        this.tL = newTL;
+      
+        this.rePositionShapes()
+        this.updateCentroidTot();
+      
         requestAnimationFrame(this.renderLoop)
       }
       , 100
@@ -201,10 +203,6 @@ export function TangramGame() {
   })
 
 
-
-  setNode('legend', {
-    stroke: this.color1
-  })
 
 }
 
@@ -256,6 +254,9 @@ TangramGame.prototype.drawThumbComps = function () {
     top: `${this.thumbCanvasWH[1]}px`,
   });
 
+  setNode('legend', {
+    stroke: this.color1
+  })
 
 }
 
@@ -324,6 +325,7 @@ TangramGame.prototype.loadProb = function (probNum) {
 
   // set tile positions, load from local storage if it was saved if not load default
   let shapeString, shapeTL;
+
   if (shapeString = localStorage.getItem(this.probNum)) {
     [shapeTL, ...this.shapes] = JSON.parse(shapeString)
     this.reScaleShapes(this.tL / shapeTL)
@@ -631,19 +633,18 @@ TangramGame.prototype.onTouchCanvas = function (e) {
     if (this.doubleTapId) { // double
       clearTimeout(this.doublTabId)
 
-      // document.removeEventListener('touchmove', this.onShapeMove)
-      // document.removeEventListener('touchend', this.onShapeMoveEnd)
+      document.removeEventListener('touchmove', this.onShapeMove)
+      document.removeEventListener('touchend', this.onShapeMoveEnd)
 
-      // document.addEventListener('touchmove', this.onShapeRotate)
-      // document.addEventListener('touchend', this.onShapeRotateEnd)
+      document.addEventListener('touchmove', this.onShapeRotate)
+      document.addEventListener('touchend', this.onShapeRotateEnd)
 
       // flipPoints(shape)
 
-      rotate(shape, 45)
+      // rotate(shape, 45)
 
     } else {
 
-      console.log('aasdfddddddddddsdf')
       this.longpressId = setTimeout(
         () => {
           console.log('aaaaasdf')
