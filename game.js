@@ -568,10 +568,12 @@ TangramGame.prototype.onClickCanvas = function (e) {
 TangramGame.prototype.onTouchCanvas = function (e) {
   e.preventDefault() // prevent touch cancel event from firing
 
+  // const i = e.touches.length -1;
+  const i = 0;
 
   const coord = [
-    e.touches[0].clientX - this.canvas.getBoundingClientRect().left,
-    e.touches[0].clientY - this.canvas.getBoundingClientRect().top,
+    e.touches[i].clientX - this.canvas.getBoundingClientRect().left,
+    e.touches[i].clientY - this.canvas.getBoundingClientRect().top,
   ];
 
   for (let i = this.shapes.length - 1; i >= 0; i--) {
@@ -682,6 +684,7 @@ TangramGame.prototype.onShapeRotateEnd = function (e) {
     this.animating = false
   } else {
     document.removeEventListener('touchmove', this.onShapeRotate)
+    snapTo45(this.shapes[this.movingShapeIdx])
     this.rotating = false;
 
   }
@@ -752,6 +755,8 @@ TangramGame.prototype.onShapeRotate = function (e) {
   let start = [];
   let end = [];
   let angle, coord, prevCoord;
+
+  let center;
   if (e.touches) {
 
     clearInterval(this.longpressId)
@@ -766,6 +771,11 @@ TangramGame.prototype.onShapeRotate = function (e) {
     }
 
     this.prevTouchRot = currTouch;
+
+    // center = [
+    //   (e.touches[0].clientX+e.touches[1].clientX)/2,
+    //   (e.touches[0].clientY+e.touches[1].clientY)/2
+    // ];
 
     // coord = [
     //   e.touches[0].clientX - this.canvas.getBoundingClientRect().left,
@@ -803,7 +813,7 @@ TangramGame.prototype.onShapeRotate = function (e) {
     )
   ) / Math.PI * 180;
 
-  rotate(shape, angle)
+  rotate(shape, angle, center)
   this.saveBoard = true;
 }
 
