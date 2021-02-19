@@ -365,7 +365,7 @@ TangramGame.prototype.rePositionShapes = function () {
 
 TangramGame.prototype.renderLoop = function () {
 
-  
+
   // draw tiles on main canvas and silhouette
   // reapply silhouette
   this.silCtx.drawImage(this.ofc, 0, 0);
@@ -469,13 +469,6 @@ TangramGame.prototype.renderLoop = function () {
   if (this.animating) {
     requestAnimationFrame(this.renderLoop);
   }
-
-
-  this.canvas.addEventListener('touchcancel', (e) => {
-
-    console.log('cancelled')
-
-  })
 
 
 
@@ -655,13 +648,11 @@ TangramGame.prototype.onShapeRotateEnd = function (e) {
 
   document.removeEventListener('touchmove', this.onShapeRotate)
   document.removeEventListener('touchend', this.onShapeRotateEnd)
-  // this.liftedPiece = false;
   this.animating = false
 }
 
 TangramGame.prototype.onShapeMove = function (e) {
   clearInterval(this.longpressId)
-  // console.log(e.target.tagName)
   if (!e.target.tagName) return;
   const shape = this.shapes[this.movingShapeIdx];
   let delta;
@@ -734,9 +725,6 @@ TangramGame.prototype.onShapeRotate = function (e) {
 }
 
 TangramGame.prototype.positionComps = function () {
-
-
-
   const selectorStyle = {};
   const topWrapStyle = {}
 
