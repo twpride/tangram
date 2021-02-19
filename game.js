@@ -100,6 +100,8 @@ export function TangramGame() {
   this.renderLoop = this.renderLoop.bind(this);
   this.onTouchCanvas = this.onTouchCanvas.bind(this);
   this.positionComps = this.positionComps.bind(this);
+  this.onShapeRotEnd_com = this.onShapeRotEnd_com.bind(this);
+
 
   document.addEventListener('keydown', e => {
     let pn = this.probNum;
@@ -568,12 +570,9 @@ TangramGame.prototype.onClickCanvas = function (e) {
 TangramGame.prototype.onTouchCanvas = function (e) {
   e.preventDefault() // prevent touch cancel event from firing
 
-  // const i = e.touches.length -1;
-  const i = 0;
-
   const coord = [
-    e.touches[i].clientX - this.canvas.getBoundingClientRect().left,
-    e.touches[i].clientY - this.canvas.getBoundingClientRect().top,
+    e.touches[0].clientX - this.canvas.getBoundingClientRect().left,
+    e.touches[0].clientY - this.canvas.getBoundingClientRect().top,
   ];
 
   for (let i = this.shapes.length - 1; i >= 0; i--) {
@@ -589,19 +588,38 @@ TangramGame.prototype.onTouchCanvas = function (e) {
       document.addEventListener('touchmove', this.onShapeMove)
       document.addEventListener('touchend', this.onShapeMoveEnd)
 
-      // this.longpressId = setTimeout(
-      //   () => {
-      //     this.shapes.push(...this.shapes.splice(i, 1))
-      //     this.liftedPiece = true;
-      //     this.movingShapeIdx = this.shapes.length - 1;
-      //   }
-      //   , 400
-      // )
+      if (this.doubleTapId) { // double
+        clearTimeout(this.doublTabId)
+
+        document.removeEventListener('touchmove', this.onShapeMove)
+        document.removeEventListener('touchend', this.onShapeMoveEnd)
+
+        document.addEventListener('touchmove', this.onShapeRotate)
+        document.addEventListener('touchend', this.onShapeRotEnd_com)
+
+        // flipPoints(shape)
+
+        // rotate(shape, 45)
+
+      } else {
+
+        this.longpressId = setTimeout(
+          () => {
+            this.shapes.push(...this.shapes.splice(i, 1))
+            this.liftedPiece = true;
+            this.movingShapeIdx = this.shapes.length - 1;
+          }
+          , 400
+        )
+
+        this.doubleTapId = setTimeout(() => {
+          this.doubleTapId = null
+        }, 400
+        )
+      }
+
 
     } else {
-      // document.removeEventListener('touchmove', this.onShapeMove)
-      // document.removeEventListener('touchend', this.onShapeMoveEnd)
-
       this.rotating = true;
 
       clearInterval(this.longpressId)
@@ -616,43 +634,12 @@ TangramGame.prototype.onTouchCanvas = function (e) {
       document.addEventListener('touchend', this.onShapeRotateEnd)
     }
 
-    // if (this.doubleTapId) { // double
-    //   clearTimeout(this.doublTabId)
-
-    //   document.removeEventListener('touchmove', this.onShapeMove)
-    //   document.removeEventListener('touchend', this.onShapeMoveEnd)
-
-    //   document.addEventListener('touchmove', this.onShapeRotate)
-    //   document.addEventListener('touchend', this.onShapeRotateEnd)
-
-    //   // flipPoints(shape)
-
-    //   // rotate(shape, 45)
-
-    // } else {
-
-    //   this.longpressId = setTimeout(
-    //     () => {
-    //       this.shapes.push(...this.shapes.splice(i, 1))
-    //       this.liftedPiece = true;
-    //       this.movingShapeIdx = this.shapes.length - 1;
-    //     }
-    //     , 400
-    //   )
-
-    //   this.doubleTapId = setTimeout(() => {
-    //     this.doubleTapId = null
-    //   }, 400
-    //   )
-    // }
-
     this.animating = true;
     requestAnimationFrame(this.renderLoop)
     break;
   }
 
 }
-
 
 
 
@@ -671,15 +658,7 @@ TangramGame.prototype.onShapeMoveEnd = function (e) {
 }
 
 TangramGame.prototype.onShapeRotateEnd = function (e) {
-
-
-  // if (!this.rotating) {
-  //   document.removeEventListener('mousemove', this.onShapeRotate)
-  //   document.removeEventListener('mouseup', this.onShapeRotateEnd)
-
-  // }
   if (e.touches.length == 0) {
-
     document.removeEventListener('touchend', this.onShapeRotateEnd)
     this.animating = false
   } else {
@@ -687,14 +666,34 @@ TangramGame.prototype.onShapeRotateEnd = function (e) {
     snapTo45(this.shapes[this.movingShapeIdx])
     this.rotating = false;
 
+    const coord = [
+      e.touches[0].clientX - this.canvas.getBoundingClientRect().left,
+      e.touches[0].clientY - this.canvas.getBoundingClientRect().top,
+    ];
+
+    if (!insidePoly(this.shapes[this.movingShapeIdx].vertices, coord)) {
+      document.removeEventListener('touchmove', this.onShapeMove)
+    }
+
   }
 
+}
+
+TangramGame.prototype.onShapeRotEnd_com = function (e) {
+
+  snapTo45(this.shapes[this.movingShapeIdx])
+  document.removeEventListener('mousemove', this.onShapeRotate)
+  document.removeEventListener('mouseup', this.onShapeRotateEnd)
+
+  document.removeEventListener('touchmove', this.onShapeRotate)
+  document.removeEventListener('touchend', this.onShapeRotEnd_com)
+  // this.liftedPiece = false;
+  this.animating = false
 }
 
 TangramGame.prototype.onShapeMove = function (e) {
   clearInterval(this.longpressId)
   if (!e.target.tagName) return;
-
 
   const shape = this.shapes[this.movingShapeIdx];
   let delta;
@@ -709,36 +708,9 @@ TangramGame.prototype.onShapeMove = function (e) {
       e.touches[0].clientY
     ]
 
-    // if (this.rotating) {
-
-    //   const center = [
-    //     (e.touches[0].clientX+e.touches[1].clientX)/2,
-    //     (e.touches[0].clientY+e.touches[1].clientY)/2
-    //   ];
-
-    //   delta = [
-    //     center[0] - this.prevTouch[0],
-    //     center[1] - this.prevTouch[1]
-    //   ];
-
-    //   this.prevTouch = center;
-
-
-    // } else {
-    //   delta = [
-    //     e.touches[0].clientX - this.prevTouch[0],
-    //     e.touches[0].clientY - this.prevTouch[1]
-    //   ];
-    //   this.prevTouch = [
-    //     e.touches[0].clientX,
-    //     e.touches[0].clientY
-    //   ]
-    // }
-
   } else {
     delta = [e.movementX, e.movementY];
   }
-
 
 
   move(shape, delta);
@@ -760,34 +732,38 @@ TangramGame.prototype.onShapeRotate = function (e) {
   if (e.touches) {
 
     clearInterval(this.longpressId)
-    const currTouch = [
-      [e.touches[0].clientX, e.touches[0].clientY],
-      [e.touches[1].clientX, e.touches[1].clientY]
-    ]
 
-    for (let idx = 0; idx < 2; idx++) {
-      start[idx] = this.prevTouchRot[1][idx] - this.prevTouchRot[0][idx];
-      end[idx] = currTouch[1][idx] - currTouch[0][idx];
+
+    if (e.touches.length >1) {
+
+      const currTouch = [
+        [e.touches[0].clientX, e.touches[0].clientY],
+        [e.touches[1].clientX, e.touches[1].clientY]
+      ]
+
+      for (let idx = 0; idx < 2; idx++) {
+        start[idx] = this.prevTouchRot[1][idx] - this.prevTouchRot[0][idx];
+        end[idx] = currTouch[1][idx] - currTouch[0][idx];
+      }
+
+      this.prevTouchRot = currTouch;
+    } else {
+      coord = [
+        e.touches[0].clientX - this.canvas.getBoundingClientRect().left,
+        e.touches[0].clientY - this.canvas.getBoundingClientRect().top,
+      ];
+
+      prevCoord = [
+        this.prevTouch[0] - this.canvas.getBoundingClientRect().left,
+        this.prevTouch[1] - this.canvas.getBoundingClientRect().top
+      ]
+
+      this.prevTouch = [e.touches[0].clientX, e.touches[0].clientY];
+      for (let idx = 0; idx < 2; idx++) {
+        start[idx] = prevCoord[idx] - shape.centroid[idx];
+        end[idx] = coord[idx] - shape.centroid[idx];
+      }
     }
-
-    this.prevTouchRot = currTouch;
-
-    // center = [
-    //   (e.touches[0].clientX+e.touches[1].clientX)/2,
-    //   (e.touches[0].clientY+e.touches[1].clientY)/2
-    // ];
-
-    // coord = [
-    //   e.touches[0].clientX - this.canvas.getBoundingClientRect().left,
-    //   e.touches[0].clientY - this.canvas.getBoundingClientRect().top,
-    // ];
-
-    // prevCoord = [
-    //   this.prevTouch[0] - this.canvas.getBoundingClientRect().left,
-    //   this.prevTouch[1] - this.canvas.getBoundingClientRect().top
-    // ]
-
-    // this.prevTouch = [e.touches[0].clientX, e.touches[0].clientY];
 
   } else {
     coord = [
