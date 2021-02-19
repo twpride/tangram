@@ -373,17 +373,6 @@ TangramGame.prototype.renderLoop = function () {
   this.ctx.fillRect(0, 0, ...this.canvasWH);
 
 
-  // draw thumb
-  if (
-    this.menuEle.style.display != 'none'
-    && (!this.times[this.probNum] || this.times[this.probNum][1] > 5000)
-  ) {
-    // this.ctx.filter = `blur(14px)`
-    this.ctx.drawImage(this.thumbCanvas, ...this.thumbLeftTopOffset);
-    this.ctx.filter = `none`
-  } else {
-    this.ctx.drawImage(this.thumbCanvas, ...this.thumbLeftTopOffset);
-  }
 
 
 
@@ -425,6 +414,7 @@ TangramGame.prototype.renderLoop = function () {
   this.silCtx.fill()
 
   // dim shapes if menu active
+
   if (this.menuEle.style.display != 'none') {
     this.ctx.globalAlpha = .7;
     this.ctx.fillStyle = this.backgroundcolor;
@@ -432,6 +422,17 @@ TangramGame.prototype.renderLoop = function () {
     this.ctx.globalAlpha = 1;
   }
 
+  // draw thumb
+  if (
+    this.menuEle.style.display != 'none'
+    && (!this.times[this.probNum] || this.times[this.probNum][1] > 5000)
+  ) {
+    this.ctx.filter = `blur(14px)`
+    this.ctx.drawImage(this.thumbCanvas, ...this.thumbLeftTopOffset);
+    this.ctx.filter = `none`
+  } else {
+    this.ctx.drawImage(this.thumbCanvas, ...this.thumbLeftTopOffset);
+  }
 
   // round corners
   // this.ctx.beginPath();
