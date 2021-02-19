@@ -117,7 +117,6 @@ export function LevelSelector(game, size) {
 
 
     if (val == this.game.probNum) {
-      console.log('hhhddding')
       this.game.menuEle.style.display = 'none';
       for (let ele of document.getElementsByClassName('canvButton')) {
         Object.assign(ele.style, { display: 'block' });

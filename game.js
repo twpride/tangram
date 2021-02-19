@@ -697,38 +697,41 @@ TangramGame.prototype.onShapeMove = function (e) {
   let delta;
 
   if (e.touches) {
-    if (this.rotating) {
+    delta = [
+      e.touches[0].clientX - this.prevTouch[0],
+      e.touches[0].clientY - this.prevTouch[1]
+    ];
+    this.prevTouch = [
+      e.touches[0].clientX,
+      e.touches[0].clientY
+    ]
 
-      // const center = [
-      //   (e.touches[0].clientX+e.touches[1].clientX)/2,
-      //   (e.touches[0].clientY+e.touches[1].clientY)/2
-      // ];
+    // if (this.rotating) {
 
-      // delta = [
-      //   center[0] - this.prevTouch[0],
-      //   center[1] - this.prevTouch[1]
-      // ];
+    //   const center = [
+    //     (e.touches[0].clientX+e.touches[1].clientX)/2,
+    //     (e.touches[0].clientY+e.touches[1].clientY)/2
+    //   ];
 
-      // this.prevTouch = center;
-      delta = [
-        e.touches[0].clientX - this.prevTouch[0],
-        e.touches[0].clientY - this.prevTouch[1]
-      ];
-      this.prevTouch = [
-        e.touches[0].clientX,
-        e.touches[0].clientY
-      ]
+    //   delta = [
+    //     center[0] - this.prevTouch[0],
+    //     center[1] - this.prevTouch[1]
+    //   ];
 
-    } else {
-      delta = [
-        e.touches[0].clientX - this.prevTouch[0],
-        e.touches[0].clientY - this.prevTouch[1]
-      ];
-      this.prevTouch = [
-        e.touches[0].clientX,
-        e.touches[0].clientY
-      ]
-    }
+    //   this.prevTouch = center;
+
+
+    // } else {
+    //   delta = [
+    //     e.touches[0].clientX - this.prevTouch[0],
+    //     e.touches[0].clientY - this.prevTouch[1]
+    //   ];
+    //   this.prevTouch = [
+    //     e.touches[0].clientX,
+    //     e.touches[0].clientY
+    //   ]
+    // }
+
   } else {
     delta = [e.movementX, e.movementY];
   }
@@ -819,7 +822,6 @@ TangramGame.prototype.positionComps = function () {
     topWrapStyle.left = ((this.canvasWH[0] < hThresh ? this.canvasWH[0] : hThresh) - 300) / 2;
     topWrapStyle.top = ((this.canvasWH[1] < vThresh ? this.canvasWH[1] : vThresh) - (200 + 70 + 284)) / 3;
 
-    console.log(this.canvasWH[1], topWrapStyle.top);
     selectorStyle.left = ((this.canvasWH[0] < hThresh ? this.canvasWH[0] : hThresh) - 360) / 2;
     selectorStyle.top = 200 + 70 + 2 * topWrapStyle.top;
 
