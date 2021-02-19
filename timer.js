@@ -15,7 +15,7 @@ Timer.prototype.start = function () {
       if (document.visibilityState == 'hidden') return;
       this.elapsed_S += 1;
       this.total_S = this.initial_S + this.elapsed_S
-      this.dispEle.innerHTML = this.convertSecsToMins(this.total_S)
+      this.dispEle.textContent = this.convertSecsToMins(this.total_S)
     }, 1000
   )
 }
@@ -36,5 +36,6 @@ Timer.prototype.convertSecsToMins = function (seconds) {
   let mins = Math.floor(seconds / 60).toString();
   let secs = Math.floor(seconds % 60);
   secs = (secs < 10 ? '0' + secs.toString() : secs.toString());
+  // return `${mins}:${secs}`.padStart(5)
   return `${mins}:${secs}`
 }

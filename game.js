@@ -22,7 +22,7 @@ export function TangramGame() {
   this.canvasWH = [this.container.clientWidth, this.container.clientHeight];
   this.canvas.width = this.canvasWH[0];
   this.canvas.height = this.canvasWH[1];
-  this.tL = Math.min(...this.canvasWH) / 8;
+  this.tL = Math.min(...this.canvasWH) / 6;
 
 
   Object.assign(this.canvas.style, {
@@ -60,9 +60,27 @@ export function TangramGame() {
   }
 
 
+  const thumbCanvasH = 200;
+  this.thumbCanvasWH = [thumbCanvasH, thumbCanvasH];
 
-  this.drawThumbComps()
+  this.thumbCanvas = document.createElement('canvas')
+  this.thumbCanvas.width = this.thumbCanvasWH[0];
+  this.thumbCanvas.height = this.thumbCanvasWH[1];
+  this.thumbCtx = this.thumbCanvas.getContext('2d');
+
+
+  setClassNodes('playpause', {
+    width: 60, height: 60, fill: this.color2,
+  })
+  setNode('flipButton', {
+    width: 60, height: 60, fill: this.color2
+  })
+
+
   this.levelSelector = new LevelSelector(this, 40)
+
+  this.thumbLeftTopOffset = []
+  this.positionComps()
   this.loadProb(0)
 
   this.img = new Image();
@@ -81,7 +99,7 @@ export function TangramGame() {
   this.onClickCanvas = this.onClickCanvas.bind(this);
   this.renderLoop = this.renderLoop.bind(this);
   this.onTouchCanvas = this.onTouchCanvas.bind(this);
-  this.drawThumbComps = this.drawThumbComps.bind(this);
+  this.positionComps = this.positionComps.bind(this);
 
   document.addEventListener('keydown', e => {
     let pn = this.probNum;
@@ -178,29 +196,7 @@ export function TangramGame() {
         this.canvas.width = this.canvasWH[0];
         this.canvas.height = this.canvasWH[1];
 
-        let leftOffset;
-
-        const styleObj = {}
-
-        if (this.canvas.height < 628) {
-          styleObj.left = this.thumbCanvasWH[0] + 60 + 20;
-          if (this.canvas.height < 450) {
-            styleObj.top = (this.canvas.height - this.levelSelector.svg_w) / 2;
-          } else {
-            styleObj.top = 10;
-          }
-        } else {
-          if (this.canvas.width < 450) {
-            styleObj.left = (this.canvas.width - this.svg_h) / 2;
-          } else {
-            styleObj.left = 0
-          }
-          styleObj.top = this.thumbCanvasWH[1] + 94 - 20 + 10
-        }
-
-        Object.keys(styleObj).forEach(key => { styleObj[key] += 'px' });
-
-        Object.assign(this.levelSelector.wrapper.style, styleObj);
+        this.positionComps()
 
         const newTL = Math.min(...this.canvasWH) / 8;
         this.reScaleShapes(newTL / this.tL)
@@ -220,55 +216,6 @@ export function TangramGame() {
 }
 
 
-TangramGame.prototype.drawThumbComps = function () {
-
-  setClassNodes('playpause', {
-    width: 60, height: 60, fill: this.color2,
-  })
-  setNode('flipButton', {
-    width: 60, height: 60, fill: this.color2
-  })
-
-  const thumbCanvasFactor = 250;
-  this.thumbCanvasWH = [thumbCanvasFactor, thumbCanvasFactor];
-
-  this.thumbCanvas = document.createElement('canvas')
-  this.thumbCanvas.width = this.thumbCanvasWH[0];
-  this.thumbCanvas.height = this.thumbCanvasWH[1];
-  this.thumbCtx = this.thumbCanvas.getContext('2d');
-  this.thumbLeftTopOffset = [0, 0];
-
-  Object.assign(document.getElementById('thumblabel').style, {
-    top: `${this.thumbCanvasWH[1] * .1}px`,
-    left: `${this.thumbCanvasWH[0]}px`,
-  });
-
-  for (let ele of document.getElementsByClassName('playpause')) {
-    Object.assign(ele.style, {
-      position: 'absolute',
-      left: `${this.thumbCanvasWH[0]}px`,
-      top: `${this.thumbCanvasWH[1] * .4}px`,
-      cursor: 'pointer',
-    });
-  }
-  Object.assign(document.getElementById('flipButton').style, {
-    position: 'absolute',
-    left: `${this.thumbCanvasWH[0]}px`,
-    top: `${this.thumbCanvasWH[1] * .7}px`,
-    cursor: 'pointer',
-  });
-
-
-
-  Object.assign(document.getElementById('legendWrapper').style, {
-    top: `${this.thumbCanvasWH[1] - 20}px`,
-  });
-
-  setNode('legend', {
-    stroke: this.color1
-  })
-
-}
 
 TangramGame.prototype.stopTimerSaveProgress = function () {
   this.timer.stop()
@@ -302,14 +249,10 @@ TangramGame.prototype.stopTimerSaveProgress = function () {
 
   this.levelSelector.selectorSvg.childNodes[this.probNum * 2].setAttribute('fill', color);
 
-  const red = (_,val) => "<span style='color:blue'>" + val.toString() + "</span>";
 
-  console.log(red`${7456}`)
-
-  document.getElementById('solvedString').innerHTML = red`${this.progress[2]}` + " solved";
-  document.getElementById('inProgressString').innerHTML = red`${this.progress[1]}` + " in progress";
-  document.getElementById('notStartedString').innerHTML = red`${this.progress[0]}` + " not started";
-
+  document.getElementById('solvedString').children[2].textContent = this.progress[2].toString().padStart(3)
+  document.getElementById('inProgressString').children[2].textContent = this.progress[1].toString().padStart(3)
+  document.getElementById('notStartedString').children[2].textContent = this.progress[0].toString().padStart(3)
 }
 
 
@@ -353,7 +296,8 @@ TangramGame.prototype.loadProb = function (probNum) {
   // draw silhouette and thumb, each has different scale factor
   const factor = Math.sqrt(80000 / prob[prob.length - 2])
   this.bounds = prob[prob.length - 1]
-  const thumbFactor = 0.8 * (this.thumbCanvasWH[0] / 2) / Math.max(...this.bounds.map(a => Math.abs(a)))
+  const thumbFactor = 0.95 * (this.thumbCanvasWH[0] / 2) / Math.max(...this.bounds.map(a => Math.abs(a)))
+  // const thumbFactor = 0.8 * (this.thumbCanvasWH[0] / 2) / Math.max(...this.bounds.map(a => Math.abs(a)))
 
   // this.thumbCtx.fillStyle = 'yellow'
   // this.thumbCtx.fillRect(0, 0, ...this.thumbCanvasWH);
@@ -421,11 +365,27 @@ TangramGame.prototype.rePositionShapes = function () {
 
 TangramGame.prototype.renderLoop = function () {
 
+  
   // draw tiles on main canvas and silhouette
   // reapply silhouette
   this.silCtx.drawImage(this.ofc, 0, 0);
   this.ctx.fillStyle = this.backgroundcolor;
   this.ctx.fillRect(0, 0, ...this.canvasWH);
+
+
+  // draw thumb
+  if (
+    this.menuEle.style.display != 'none'
+    && (!this.times[this.probNum] || this.times[this.probNum][1] > 5000)
+  ) {
+    // this.ctx.filter = `blur(14px)`
+    this.ctx.drawImage(this.thumbCanvas, ...this.thumbLeftTopOffset);
+    this.ctx.filter = `none`
+  } else {
+    this.ctx.drawImage(this.thumbCanvas, ...this.thumbLeftTopOffset);
+  }
+
+
 
   this.silCtx.beginPath();
   this.ctx.fillStyle = this.pattern;
@@ -472,17 +432,6 @@ TangramGame.prototype.renderLoop = function () {
     this.ctx.globalAlpha = 1;
   }
 
-  // draw thumb
-  if (
-    this.menuEle.style.display != 'none'
-    && (!this.times[this.probNum] || this.times[this.probNum][1] > 5000)
-  ) {
-    // this.ctx.filter = `blur(14px)`
-    this.ctx.drawImage(this.thumbCanvas, ...this.thumbLeftTopOffset);
-    this.ctx.filter = `none`
-  } else {
-    this.ctx.drawImage(this.thumbCanvas, ...this.thumbLeftTopOffset);
-  }
 
   // round corners
   // this.ctx.beginPath();
@@ -781,4 +730,48 @@ TangramGame.prototype.onShapeRotate = function (e) {
 
   rotate(shape, angle)
   this.saveBoard = true;
+}
+
+TangramGame.prototype.positionComps = function () {
+
+
+
+  const selectorStyle = {};
+  const topWrapStyle = {}
+
+  const ls = this.levelSelector;
+  selectorStyle.height = ls.svg_w;
+  selectorStyle.width = ls.svg_h;
+
+  const vThresh = 1800;
+  const hThresh = 500;
+
+  if (this.canvas.height > 554) { //portrait
+    topWrapStyle.left = ((this.canvasWH[0] < hThresh ? this.canvasWH[0] : hThresh) - 300) / 2;
+    topWrapStyle.top = ((this.canvasWH[1] < vThresh ? this.canvasWH[1] : vThresh) - (200 + 70 + 284)) / 3;
+
+    console.log(this.canvasWH[1], topWrapStyle.top);
+    selectorStyle.left = ((this.canvasWH[0] < hThresh ? this.canvasWH[0] : hThresh) - 360) / 2;
+    selectorStyle.top = 200 + 70 + 2 * topWrapStyle.top;
+
+  } else { //landscape
+    topWrapStyle.left = ((this.canvasWH[0] < vThresh ? this.canvasWH[0] : vThresh) - (300 + 360)) / 3
+    topWrapStyle.top = ((this.canvasWH[1] < hThresh ? this.canvasWH[1] : hThresh) - (200 + 70)) / 2;
+
+    selectorStyle.left = 300 + 2 * topWrapStyle.left;
+    selectorStyle.top = ((this.canvasWH[1] < hThresh ? this.canvasWH[1] : hThresh) - 284) / 2;
+
+  }
+  this.thumbLeftTopOffset[0] = topWrapStyle.left;
+  this.thumbLeftTopOffset[1] = topWrapStyle.top;
+
+  Object.keys(selectorStyle).forEach(key => { selectorStyle[key] += 'px' });
+  Object.assign(this.levelSelector.wrapper.style, selectorStyle)
+
+  Object.keys(topWrapStyle).forEach(key => { topWrapStyle[key] += 'px' });
+  for (let ele of document.getElementsByClassName('topWrapper')) {
+    Object.assign(ele.style, topWrapStyle);
+  }
+
+
 }

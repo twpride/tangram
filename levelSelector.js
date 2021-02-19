@@ -22,27 +22,18 @@ export function LevelSelector(game, size) {
 
   this.createSelectorSvg(size)
 
-  const red = (_,val) => {
-    let ret;
-    ret = "<span style='color:blue'>" + val.toString() + "</span>"
-    return ret;
-  }
 
 
-  console.log(
-    red`${543}`
-  )
-  // document.getElementById('solvedString').innerHTML = red`${this.game.progress[2]}` + " solved";
-  // document.getElementById('inProgressString').innerHTML = red`${this.game.progress[1]}` + " in progress";
-  // document.getElementById('notStartedString').innerHTML = red`${this.game.progress[0]}` + " not started";
 
-  // document.getElementById('solvedString').innerHTML = this.game.progress[2] + " solved";
-  // document.getElementById('inProgressString').innerHTML = this.game.progress[1] + " in progress";
-  // document.getElementById('notStartedString').innerHTML = this.game.progress[0] + " not started";
 
-  document.getElementById('solvedString').innerHTML = 111111 + " solved";
-  document.getElementById('inProgressString').innerHTML = 100000 + " in progress";
-  document.getElementById('notStartedString').innerHTML = this.game.progress[0] + " not started";
+  const statusWrap = document.getElementById('legendCateg');
+
+
+
+  document.getElementById('solvedString').children[2].textContent = this.game.progress[2].toString().padStart(3)
+  document.getElementById('inProgressString').children[2].textContent = this.game.progress[1].toString().padStart(3)
+  document.getElementById('notStartedString').children[2].textContent = this.game.progress[0].toString().padStart(3)
+
 
   document.getElementById('cardUpArrow').addEventListener('click', (e) => {
     if (this.pg > 0) {
@@ -199,33 +190,8 @@ LevelSelector.prototype.createSelectorSvg = function (size) {
     position: 'absolute',
   });
 
+  // this.positionSelector()
 
-  let leftOffset;
-
-
-  const styleObj = {};
-  styleObj.height = this.svg_w;
-  styleObj.width = this.svg_h;
-
-  if (this.game.canvas.height < 628) {
-    styleObj.left = this.game.thumbCanvasWH[0] + 60 + 20;
-
-    if (this.game.canvas.height < 450) {
-      styleObj.top = (this.game.canvas.height - this.svg_w) / 2;
-    } else {
-      styleObj.top = 10;
-    }
-  } else {
-    if (this.game.canvas.width < 450) {
-      styleObj.left = (this.game.canvas.width - this.svg_h) / 2;
-    } else {
-      styleObj.left = 0;
-    }
-    styleObj.top = this.game.thumbCanvasWH[1] + 94 - 20 + 10;
-  }
-
-  Object.keys(styleObj).forEach(key => { styleObj[key] += 'px' });
-  Object.assign(this.wrapper.style, styleObj);
 
   this.game.progress = [0, 0, 0];
 
@@ -402,4 +368,26 @@ LevelSelector.prototype.getColorVal = function (time = 0, score = 0) {
     }
   }
 
+}
+
+
+LevelSelector.prototype.positionSelector = function () {
+  const styleObj = {};
+
+  styleObj.height = this.svg_w;
+  styleObj.width = this.svg_h;
+
+  if (this.game.canvas.height < 532) { //landscape
+
+    styleObj.left = this.game.thumbCanvasWH[0] + 60 + 20;
+    styleObj.top = this.game.canvas.height < 500 ? (this.game.canvas.height - this.svg_w) / 2 : 0;
+
+  } else { //portrait
+
+    styleObj.top = this.game.canvas.height > 650 ? (650 + 248 - this.svg_w) / 2 : (this.game.canvas.height + 248 - this.svg_w) / 2;
+    styleObj.left = this.game.canvas.width < 500 ? (this.game.canvas.width - this.svg_h) / 2 : 0;
+  }
+
+  Object.keys(styleObj).forEach(key => { styleObj[key] += 'px' });
+  Object.assign(this.wrapper.style, styleObj)
 }
