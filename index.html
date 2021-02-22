@@ -4,20 +4,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Tangram</title>
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inconsolata&family=Roboto&display=swap" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="index.css" />
-  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 </head>
 
 <body>
   <div id="canv">
-
+    <canvas id='mainCanvas'></canvas>
     <div class="topWrapper">
       <div id="thumblabel">
         <div id="probnum"></div>
-        <div id="timer"></div>
+        <timer-ele id='timer'>
+          </timer>
       </div>
       <svg id='pauseButton' class="playpause canvButton" xmlns="http://www.w3.org/2000/svg"
         enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24">
@@ -38,9 +39,6 @@
           id="path1380" />
       </svg>
     </div>
-
-    <canvas id='mainCanvas'></canvas>
-
   </div>
   <div id="menu">
     <div class="topWrapper">
@@ -53,7 +51,6 @@
           <path d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M9.5,16.5v-9l7,4.5L9.5,16.5z" />
         </g>
       </svg>
-
       <div id='legendWrapper'>
         <div>
           <div>status</div>
@@ -73,13 +70,12 @@
         <div id='notStartedString'>
           <div>not started</div>
           <div>
-            <div class="colorSquare"></div>
+            <div class="whiteBar"></div>
           </div>
           <div></div>
         </div>
       </div>
     </div>
-
     <div id='levelSelectorWrapper'>
       <svg id='cardUpArrow' class="cardArrow" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24"
         width="24">
@@ -92,13 +88,62 @@
         <path d="M0 24V0h24v24H0z" fill="none" />
       </svg>
     </div>
+
+
+    <div id="info">
+      <div>
+        <h3 id="goal">How to play</h3>
+        <ul>
+          <li>To start a puzzle, click on a level in the selector (at the bottom right)
+          </li>
+          <li>Move the puzzle pieces until they form the shape matching silhouette (top left)
+            <ul>
+              <li>All seven pieces must be used and they cannot overlap</li>
+            </ul>
+          </li>
+          <li>Can you solve the puzzle under five minutes? one?<ul>
+              <li>Each box in the level selector is colored based on the elapsed time (see color bar in legend)</li>
+              <li>Challenge yourself and others to get as many green boxes as possible!</li>
+            </ul>
+          </li>
+        </ul>
+        <h3 id="controls-to-move-pieces">Moving the puzzle pieces</h3>
+        <ul>
+          <li>Translation<ul>
+              <li>Mouse: Left click and drag</li>
+              <li>Touch: Tap and drag</li>
+            </ul>
+          </li>
+          <li>Rotation<ul>
+              <li>Mouse: Right click and drag</li>
+              <li>Two-finger touch: With 1 finger touching the piece, drag with second finger</li>
+              <li>One-finger touch: Double tap piece. Drag on second tap</li>
+            </ul>
+          </li>
+          <li>Lifting a piece up<ul>
+              <li>Mouse: double click</li>
+              <li>With touch: Long press</li>
+              <li>This enables it to move over(overlap) other pieces</li>
+              <li>Lifted pieces turn semi-transparent</li>
+            </ul>
+          </li>
+          <li>Flipping the parallelogram<ul>
+              <li>Click or tap the button below the play/pause button.</li>
+            </ul>
+          </li>
+        </ul>
+
+      </div>
+
+
+    </div>
+
   </div>
+
+
+
   <div id="silcanvas"></div>
   <script src="index.js" type="module"></script>
-
-
-
 </body>
-
 
 </html>

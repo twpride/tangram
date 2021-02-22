@@ -5,6 +5,8 @@ import { Bezier } from './cubicBezier.js'
 
 
 export function LevelSelector(game, size) {
+
+
   this.game = game;
 
   this.pg = 0;
@@ -14,20 +16,14 @@ export function LevelSelector(game, size) {
   this.vbOriginStart = null;
   this.dragging = false;
 
-  setNode('cardUpArrow', {
-    fill: this.pg == 0 ? 'none' : this.game.color1
-  })
 
   this.wrapper = document.getElementById('levelSelectorWrapper');
 
   this.createSelectorSvg(size)
 
-
-
-
-
-  const statusWrap = document.getElementById('legendCateg');
-
+  setNode('cardUpArrow', {
+    fill: this.pg == 0 ? 'none' : this.game.color1
+  })
 
 
   document.getElementById('solvedString').children[2].textContent = this.game.progress[2].toString().padStart(3)
@@ -189,7 +185,6 @@ LevelSelector.prototype.createSelectorSvg = function (size) {
     position: 'absolute',
   });
 
-  // this.positionSelector()
 
 
   this.game.progress = [0, 0, 0];
@@ -203,7 +198,7 @@ LevelSelector.prototype.createSelectorSvg = function (size) {
           if (this.selectorSvg) {
             this.wrapper.replaceChild(selectorSvg, this.selectorSvg)
           } else {
-            this.wrapper.appendChild(selectorSvg)
+            this.wrapper.append(selectorSvg)
           }
           this.selectorSvg = selectorSvg
           return;
@@ -370,23 +365,3 @@ LevelSelector.prototype.getColorVal = function (time = 0, score = 0) {
 }
 
 
-LevelSelector.prototype.positionSelector = function () {
-  const styleObj = {};
-
-  styleObj.height = this.svg_w;
-  styleObj.width = this.svg_h;
-
-  if (this.game.canvas.height < 532) { //landscape
-
-    styleObj.left = this.game.thumbCanvasWH[0] + 60 + 20;
-    styleObj.top = this.game.canvas.height < 500 ? (this.game.canvas.height - this.svg_w) / 2 : 0;
-
-  } else { //portrait
-
-    styleObj.top = this.game.canvas.height > 650 ? (650 + 248 - this.svg_w) / 2 : (this.game.canvas.height + 248 - this.svg_w) / 2;
-    styleObj.left = this.game.canvas.width < 500 ? (this.game.canvas.width - this.svg_h) / 2 : 0;
-  }
-
-  Object.keys(styleObj).forEach(key => { styleObj[key] += 'px' });
-  Object.assign(this.wrapper.style, styleObj)
-}

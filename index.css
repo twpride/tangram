@@ -4,32 +4,55 @@
   box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  background-color: #ddd;
-}
-
-html,
-body {
+#menu, #canv {
+  margin: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
   height: 100%;
   width: 100%;
-  box-sizing: border-box;
+  overflow: hidden;
+}
+
+#info {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  display: none;
+  font-family: "Inconsolata", monospace;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  text-shadow: 2px 2px 5px white;
+  overflow-y: auto;
+}
+#info div {
+  width: min(80%, 700px);
+}
+#info ul {
+  padding-left: 15px;
+}
+#info::before, #info::after {
+  content: "";
+  /* Insert pseudo-element */
+  margin: auto;
+  /* Make it push flex items to the center */
 }
 
 .topWrapper {
   position: absolute;
   top: 0;
   left: 0;
-  width: 300px;
-  height: 270px;
 }
 
 .playpause {
   position: absolute;
   left: 220px;
   top: 70px;
-  z-index: 30;
   cursor: pointer;
 }
 
@@ -37,44 +60,7 @@ body {
   position: absolute;
   left: 220px;
   top: 140px;
-  z-index: 30;
   cursor: pointer;
-}
-
-#canv {
-  margin: auto;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  height: 100%;
-  width: 100%;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-#menu {
-  margin: auto;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  height: 100%;
-  width: 100%;
-  border-radius: 15px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 11;
-  overflow: hidden;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 
 #silcanvas canvas {
@@ -88,7 +74,6 @@ body {
   position: absolute;
   top: 10px;
   left: 220px;
-  z-index: 20;
   width: 60px;
   height: 50px;
   display: flex;
@@ -103,6 +88,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family: "Roboto", sans-serif;
 }
 
 #probnum {
@@ -113,13 +99,13 @@ body {
 }
 
 #timer {
-  font-family: "Roboto Mono", monospace;
+  font-family: "Inconsolata", monospace;
+  font-size: 18px;
   color: #555;
   white-space: pre-wrap;
 }
 
 svg text {
-  /* cursor: default; */
   cursor: pointer;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -138,7 +124,7 @@ svg text {
 
 .cardArrow {
   color: #555;
-  z-index: 10;
+  z-index: 1;
 }
 
 #legendWrapper {
@@ -172,8 +158,8 @@ svg text {
   justify-content: center;
 }
 #legendWrapper > div:nth-child(n+2) {
-  font-family: "Roboto Mono", monospace;
-  font-size: 12px;
+  font-family: "Inconsolata", monospace;
+  font-size: 14.5px;
 }
 #legendWrapper > div:nth-child(n+2) > div:nth-child(1) {
   text-transform: uppercase;
@@ -189,10 +175,9 @@ svg text {
 }
 #legendWrapper > div:nth-child(1) > div:nth-child(2) {
   padding-left: 45px;
-  margin-bottom: 2px;
 }
 #legendWrapper > div:nth-child(4) > div:nth-child(2) {
-  padding-left: 9.2px;
+  padding-left: 9.25px;
 }
 
 .colorBar {
@@ -202,9 +187,9 @@ svg text {
   margin-right: 2px;
 }
 
-.colorSquare {
+.whiteBar {
   background-color: white;
-  width: 94.61px;
+  width: 94.3167px;
   height: 10px;
 }
 
@@ -214,6 +199,42 @@ svg text {
 
 .blue {
   background: linear-gradient(to right, #bababa, #7575ff);
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  top: 150%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent black transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
 }
 
 /*# sourceMappingURL=index.css.map */

@@ -9,7 +9,7 @@ export class Timer extends HTMLElement {
 
   constructor() {
     super()
-    this.firstChild.data = Timer.convertSecsToMins(this.elapsed_S + this.initial_S);
+    this.innerHTML = Timer.convertSecsToMins(this.elapsed_S + this.initial_S);
   }
 
   start() {
@@ -19,7 +19,7 @@ export class Timer extends HTMLElement {
         if (document.visibilityState == 'hidden') return;
         this.elapsed_S += 1;
         this.total_S = this.initial_S + this.elapsed_S
-        this.firstChild.data = Timer.convertSecsToMins(this.total_S)
+        this.textContent = Timer.convertSecsToMins(this.total_S)
       }, 1000
     )
   }
@@ -33,13 +33,14 @@ export class Timer extends HTMLElement {
     this.initial_S = initial_S
     this.elapsed_S = elapsed_S
     this.total_S = initial_S + elapsed_S
-    this.firstChild.data = Timer.convertSecsToMins(this.initial_S)
+    this.innerHTML = Timer.convertSecsToMins(this.initial_S)
   }
 
   static convertSecsToMins(seconds) {
     let mins = Math.floor(seconds / 60).toString();
     let secs = Math.floor(seconds % 60);
     secs = (secs < 10 ? '0' + secs.toString() : secs.toString());
+    // return `${mins}:${secs}`.padStart(5)
     return `${mins}:${secs}`
   }
 
