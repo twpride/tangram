@@ -674,25 +674,35 @@ export class TangramGame {
     selectorStyle.width = ls.svg_h;
 
     const vThresh = 1800;
-    const hThresh = 700;
-    const hthreshBias = 250;
+    const hThresh = 1080;
+    const hThresh2 = 800;
 
     const legendEffH = 62;
 
     if (this.canvas.height > 546) { //portrait
-      topWrapStyle.left = ((this.canvasWH[0] < hThresh ? this.canvasWH[0] : hThresh - hthreshBias) - 300) / 2;
+      if (this.canvasWH[0] > hThresh) {
+        topWrapStyle.left = (this.canvasWH[0] / 3 - 300) / 2;
+        selectorStyle.left = (this.canvasWH[0] / 3 - 360) / 2;
+
+        infoStyle.left = this.canvasWH[0] / 3 + 'px'
+        infoStyle.display = 'flex'
+      } else if (this.canvasWH[0] > hThresh2) {
+        topWrapStyle.left = (400 - 300) / 2;
+        selectorStyle.left = (400 - 360) / 2;
+
+        infoStyle.left = 400 + 'px'
+        infoStyle.display = 'flex'
+      } else {
+        topWrapStyle.left = (this.canvasWH[0] - 300) / 2;
+        selectorStyle.left = (this.canvasWH[0] - 360) / 2;
+
+        infoStyle.display = 'none'
+      }
 
       topWrapStyle.top = ((this.canvasWH[1] < vThresh ? this.canvasWH[1] : vThresh) - (200 + legendEffH + 284)) / 3;
 
-      selectorStyle.left = ((this.canvasWH[0] < hThresh ? this.canvasWH[0] : hThresh - hthreshBias) - 360) / 2;
       selectorStyle.top = 200 + legendEffH + 2 * topWrapStyle.top;
 
-      if (this.canvas.width > hThresh) {
-        infoStyle.left = hThresh - hthreshBias + 'px'
-        infoStyle.display = 'flex'
-      } else {
-        infoStyle.display = 'none'
-      }
 
 
     } else { //landscape

@@ -34,11 +34,11 @@
   font-size: 22px;
   display: flex;
   // justify-content: center;
-  align-items: center;
+  // align-items: center;
   flex-direction: column;
   text-shadow: 2px 2px 5px white;
   div {
-    width: min(80%,700px);
+    width: min(100%,700px);
   }
   ul {
     padding-left: 15px;
@@ -48,8 +48,9 @@
     margin: auto; /* Make it push flex items to the center */
   }
   overflow-y: auto;
-
 }
+
+
 
 .topWrapper {
   position: absolute;
@@ -254,4 +255,27 @@ svg text {
 
 .tooltip:hover .tooltiptext {
   visibility: visible;
+}
+
+.link-icons {
+  fill: #7e0000;
+  min-width: 30px;
+  min-height: 30px;
+}
+
+#link-icons-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  div {
+    width: 20px;
+  }
+}
+
+h3 {
+  margin-top: 20px;
+  margin-bottom: 5px;
+}
+#list-wrapper > ul {
+  margin:0;
 }
