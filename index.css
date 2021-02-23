@@ -128,6 +128,10 @@ li li {
   justify-content: space-between;
   flex-direction: column;
   align-items: center;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 #probnum,
@@ -178,6 +182,10 @@ svg text {
   width: 300px;
   top: 200px;
   left: 0px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 #legendWrapper > div {
   display: flex;
