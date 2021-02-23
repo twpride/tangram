@@ -94,14 +94,14 @@ export class TangramGame {
 
     let seedTimes = seed['times'];
     delete seed['times'];
-    JSON.parse(seedTimes).forEach((ele,idx)=>{
+    JSON.parse(seedTimes).forEach((ele, idx) => {
       if (ele) {
         this.times[idx] = ele
       }
     })
 
     for (let k in seed) {
-      localStorage.setItem(k,seed[k])
+      localStorage.setItem(k, seed[k])
     }
 
 
@@ -375,7 +375,7 @@ export class TangramGame {
     }
 
     const delta = this.canvasWH.map((ele, idx) => (
-      ele - maxXY[idx] -this.tL
+      ele - maxXY[idx] - this.tL
     ))
 
     for (let i = 0; i < this.shapes.length; i++) {
@@ -524,6 +524,8 @@ export class TangramGame {
 
       } else {
         this.rotating = true;
+        document.removeEventListener('touchmove', this.onShapeMove)
+        // document.removeEventListener('touchend', this.onShapeMoveEnd)
 
         clearInterval(this.longpressId)
         this.liftedPiece = false;
@@ -574,7 +576,10 @@ export class TangramGame {
   }
 
   onShapeMoveEnd(e) {
-    if (this.rotating) return;
+    if (this.rotating) {
+      document.addEventListener('touchmove', this.onShapeMove)
+      return;
+    }
     this.liftedPiece = false;
     this.updateCentroidTot()
     document.removeEventListener('mousemove', this.onShapeMove)

@@ -36,7 +36,7 @@
   // justify-content: center;
   // align-items: center;
   flex-direction: column;
-  text-shadow: 2px 2px 5px white;
+  // text-shadow: 2px 2px 5px white;
   padding-left: 10px;
   padding-right: 10px;
 
@@ -117,6 +117,7 @@ li {
 
 #close-info-button {
   margin-right: 10px;
+  cursor: pointer;
 }
 
 #silcanvas canvas {

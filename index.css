@@ -28,7 +28,6 @@
   font-size: 22px;
   display: flex;
   flex-direction: column;
-  text-shadow: 2px 2px 5px white;
   padding-left: 10px;
   padding-right: 10px;
   overflow-y: auto;
@@ -108,6 +107,7 @@ li li {
 
 #close-info-button {
   margin-right: 10px;
+  cursor: pointer;
 }
 
 #silcanvas canvas {
