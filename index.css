@@ -1,10 +1,12 @@
+@charset "UTF-8";
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   box-sizing: border-box;
 }
 
-#menu, #canv {
+#menu,
+#canv {
   margin: auto;
   position: absolute;
   top: 0;
@@ -14,6 +16,7 @@
   height: 100%;
   width: 100%;
   overflow: hidden;
+  font-family: "Inconsolata", monospace;
 }
 
 #info {
@@ -22,24 +25,64 @@
   top: 0px;
   bottom: 0px;
   display: none;
-  font-family: "Inconsolata", monospace;
   font-size: 22px;
   display: flex;
   flex-direction: column;
   text-shadow: 2px 2px 5px white;
+  padding-left: 10px;
+  padding-right: 10px;
   overflow-y: auto;
-}
-#info div {
-  width: min(100%, 700px);
-}
-#info ul {
-  padding-left: 15px;
+  color: #444;
+  z-index: 10;
 }
 #info::before, #info::after {
   content: "";
   /* Insert pseudo-element */
   margin: auto;
   /* Make it push flex items to the center */
+}
+#info > div {
+  width: min(100%, 400px);
+}
+
+ul {
+  padding-left: 20px;
+}
+
+::marker {
+  margin-right: 20px;
+}
+
+li {
+  list-style-type: "▸";
+  font-size: 20px;
+  padding-left: 5px;
+}
+li li {
+  list-style-type: "▹";
+  font-size: 16px;
+}
+
+#title-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 34px;
+  font-weight: 800;
+  margin-top: 20px;
+}
+
+.link-icons {
+  fill: #7e0000;
+  min-width: 30px;
+  min-height: 30px;
+}
+
+#link-icons-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 80px;
 }
 
 .topWrapper {
@@ -55,16 +98,22 @@
   cursor: pointer;
 }
 
-#flipButton {
+#flipButton,
+#infoButton {
   position: absolute;
   left: 220px;
   top: 140px;
   cursor: pointer;
 }
 
+#close-info-button {
+  margin-right: 10px;
+}
+
 #silcanvas canvas {
   position: absolute;
   bottom: 0;
+  right: 0;
   height: 300px;
   width: 300px;
 }
@@ -87,18 +136,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: "Roboto", sans-serif;
 }
 
 #probnum {
-  font-family: "Roboto", sans-serif;
   font-size: 20px;
-  font-weight: bold;
+  font-weight: 800;
   color: black;
 }
 
 #timer {
-  font-family: "Inconsolata", monospace;
   font-size: 18px;
   color: #555;
   white-space: pre-wrap;
@@ -157,7 +203,6 @@ svg text {
   justify-content: center;
 }
 #legendWrapper > div:nth-child(n+2) {
-  font-family: "Inconsolata", monospace;
   font-size: 14.5px;
 }
 #legendWrapper > div:nth-child(n+2) > div:nth-child(1) {
@@ -167,10 +212,9 @@ svg text {
   white-space: pre-wrap;
 }
 #legendWrapper > div:nth-child(1) {
-  font-family: "Roboto", sans-serif;
   font-size: 14px;
   text-transform: capitalize;
-  font-weight: bold;
+  font-weight: 800;
 }
 #legendWrapper > div:nth-child(1) > div:nth-child(2) {
   padding-left: 45px;
@@ -236,28 +280,20 @@ svg text {
   visibility: visible;
 }
 
-.link-icons {
-  fill: #7e0000;
-  min-width: 30px;
-  min-height: 30px;
-}
-
-#link-icons-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-#link-icons-wrapper div {
-  width: 20px;
-}
-
 h3 {
   margin-top: 20px;
   margin-bottom: 5px;
+  font-size: 22px;
 }
 
 #list-wrapper > ul {
   margin: 0;
+}
+
+a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /*# sourceMappingURL=index.css.map */

@@ -2,6 +2,7 @@ import { move, rotate, snapTo45, flipPoints } from "./shape.js"
 import { shapeGeoms } from "./shapeGeoms.js"
 import { insidePoly, cross, calcPenetration } from "./vectorUtils.js"
 import { problems } from './problemsData.js'
+import { seed } from './seed.js'
 import { setNode, setClassNodes } from './util.js'
 import { LevelSelector } from './levelSelector.js'
 
@@ -11,6 +12,7 @@ export class TangramGame {
   backgroundcolor = '#cccccc'
   color1 = '#555'
   color2 = '#7e0000'
+  criteria = 6000;
 
   container = document.getElementById('canv');
   canvas = document.getElementById('mainCanvas');
@@ -18,7 +20,7 @@ export class TangramGame {
   ctx = this.canvas.getContext("2d");
 
   canvasWH = [this.container.clientWidth, this.container.clientHeight];
-  tL = Math.min(...this.canvasWH) / 6;
+  tL = Math.min(...this.canvasWH) / 8;
 
   silCanvWH = [900, 900];
 
@@ -81,12 +83,27 @@ export class TangramGame {
     this.ofc.width = this.silCanvWH[0];
     this.ofc.height = this.silCanvWH[1];
 
+
     let times;
     if (times = localStorage.getItem('times')) {
       this.times = JSON.parse(times);
     } else {
       this.times = []
     }
+
+
+    let seedTimes = seed['times'];
+    delete seed['times'];
+    JSON.parse(seedTimes).forEach((ele,idx)=>{
+      if (ele) {
+        this.times[idx] = ele
+      }
+    })
+
+    for (let k in seed) {
+      localStorage.setItem(k,seed[k])
+    }
+
 
     this.thumbCanvas.width = this.thumbCanvasWH[0];
     this.thumbCanvas.height = this.thumbCanvasWH[1];
@@ -95,7 +112,9 @@ export class TangramGame {
       width: 60, height: 60, fill: this.color2,
     })
     setNode('flipButton', {
-      width: 60, height: 60, fill: this.color2
+      width: 60, height: 60,
+      fill: this.color2,
+      // stroke: this.color2
     })
 
     this.levelSelector = new LevelSelector(this, 40)
@@ -159,6 +178,15 @@ export class TangramGame {
         Object.assign(ele.style, { display: 'block' });
       }
       requestAnimationFrame(this.renderLoop)
+    })
+
+    document.getElementById('infoButton').addEventListener('click', () => {
+      document.getElementById('info').style.display = 'flex';
+
+    })
+
+    document.getElementById('close-info-button').addEventListener('click', () => {
+      document.getElementById('info').style.display = 'none';
     })
 
     document.getElementById('flipButton').addEventListener('click', () => {
@@ -232,7 +260,7 @@ export class TangramGame {
     const timeFraction = this.timer.total_S / 300;
 
     let newProbState;
-    if (this.sum < 5000) {
+    if (this.sum < this.criteria) {
       const colAngle = 120 - Math.floor((timeFraction > 1 ? 1 : timeFraction) * 120);
       color = `hsl(${colAngle}, 100%, 50%)`
       newProbState = 2;
@@ -347,7 +375,7 @@ export class TangramGame {
     }
 
     const delta = this.canvasWH.map((ele, idx) => (
-      ele - maxXY[idx]
+      ele - maxXY[idx] -this.tL
     ))
 
     for (let i = 0; i < this.shapes.length; i++) {
@@ -675,9 +703,15 @@ export class TangramGame {
 
     const vThresh = 1800;
     const hThresh = 1080;
-    const hThresh2 = 800;
+    const hThresh2 = 700;
 
     const legendEffH = 62;
+
+    infoStyle.background = `none`
+    // infoStyle.background = `rgba(255,255,255,0.7)`
+    for (let ele of document.getElementsByClassName('overlayInfo')) {
+      ele.style.display = 'none'
+    }
 
     if (this.canvas.height > 546) { //portrait
       if (this.canvasWH[0] > hThresh) {
@@ -686,17 +720,27 @@ export class TangramGame {
 
         infoStyle.left = this.canvasWH[0] / 3 + 'px'
         infoStyle.display = 'flex'
+        infoStyle.alignItems = 'flex-start';
       } else if (this.canvasWH[0] > hThresh2) {
         topWrapStyle.left = (400 - 300) / 2;
         selectorStyle.left = (400 - 360) / 2;
 
         infoStyle.left = 400 + 'px'
         infoStyle.display = 'flex'
+        infoStyle.alignItems = 'flex-start';
       } else {
         topWrapStyle.left = (this.canvasWH[0] - 300) / 2;
         selectorStyle.left = (this.canvasWH[0] - 360) / 2;
 
+        infoStyle.left = 0 + 'px'
         infoStyle.display = 'none'
+        infoStyle.backgroundColor = `rgba(255,255,255,0.7)`
+        infoStyle.alignItems = 'center';
+
+        for (let ele of document.getElementsByClassName('overlayInfo')) {
+          ele.style.display = 'block'
+        }
+
       }
 
       topWrapStyle.top = ((this.canvasWH[1] < vThresh ? this.canvasWH[1] : vThresh) - (200 + legendEffH + 284)) / 3;
@@ -712,8 +756,18 @@ export class TangramGame {
       selectorStyle.left = 300 + 2 * topWrapStyle.left;
       selectorStyle.top = ((this.canvasWH[1] < hThresh ? this.canvasWH[1] : hThresh) - 284) / 2;
 
-      infoStyle.display = 'none'
+      infoStyle.left = 0 + 'px';
+      infoStyle.display = 'none';
+      infoStyle.backgroundColor = `rgba(255,255,255,0.7)`;
+      infoStyle.alignItems = 'center';
+
+      for (let ele of document.getElementsByClassName('overlayInfo')) {
+        ele.style.display = 'block';
+      }
     }
+
+
+
     this.thumbLeftTopOffset[0] = topWrapStyle.left;
     this.thumbLeftTopOffset[1] = topWrapStyle.top;
 
@@ -793,7 +847,7 @@ export class TangramGame {
 
     if (
       this.menuEle.style.display != 'none'
-      && (!this.times[this.probNum] || this.times[this.probNum][1] > 5000)
+      && (!this.times[this.probNum] || this.times[this.probNum][1] > this.criteria)
     ) {
       this.ctx.filter = `blur(14px)`
       this.ctx.drawImage(this.thumbCanvas, ...this.thumbLeftTopOffset);
@@ -825,7 +879,7 @@ export class TangramGame {
       this.sum += arr[i]
     }
 
-    if (this.sum > 5000 && this.menuEle.style.display == 'none') {
+    if (this.sum > this.criteria && this.menuEle.style.display == 'none') {
       this.timer.start()
     } else {
       this.timer.stop()

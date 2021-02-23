@@ -4,7 +4,8 @@
   box-sizing: border-box;
 }
 
-#menu, #canv {
+#menu,
+#canv {
   margin: auto;
   position: absolute;
   top: 0;
@@ -21,36 +22,77 @@
   // user-select: none;
 
   overflow: hidden;
+  font-family: "Inconsolata", monospace;
 }
 
 #info {
   position: absolute;
-  // background-color: #0f0;
   right: 0px;
   top: 0px;
   bottom: 0px;
   display: none;
-  font-family: "Inconsolata", monospace;
   font-size: 22px;
   display: flex;
   // justify-content: center;
   // align-items: center;
   flex-direction: column;
   text-shadow: 2px 2px 5px white;
-  div {
-    width: min(100%,700px);
-  }
-  ul {
-    padding-left: 15px;
-  }
-  &::before, &::after {
-    content: '';  /* Insert pseudo-element */
+  padding-left: 10px;
+  padding-right: 10px;
+
+  &::before,
+  &::after {
+    content: ""; /* Insert pseudo-element */
     margin: auto; /* Make it push flex items to the center */
   }
   overflow-y: auto;
+  > div {
+    width: min(100%, 400px);
+  }
+  color: #444;
+  z-index: 10;
 }
 
+ul {
+  padding-left: 20px;
+}
 
+::marker {
+  margin-right: 20px;
+}
+li {
+  list-style-type: "▸";
+  font-size: 20px;
+  li {
+    list-style-type: "▹";
+    font-size: 16px;
+  }
+
+  padding-left: 5px;
+}
+
+#title-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  // height: 80px;
+  font-size: 34px;
+  font-weight: 800;
+  margin-top: 20px;
+}
+
+.link-icons {
+  fill: #7e0000;
+  min-width: 30px;
+  min-height: 30px;
+}
+
+#link-icons-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 80px;
+}
 
 .topWrapper {
   position: absolute;
@@ -65,17 +107,22 @@
   cursor: pointer;
 }
 
-#flipButton {
+#flipButton,
+#infoButton {
   position: absolute;
   left: 220px;
   top: 140px;
   cursor: pointer;
 }
 
+#close-info-button {
+  margin-right: 10px;
+}
 
 #silcanvas canvas {
   position: absolute;
   bottom: 0;
+  right: 0;
   height: 300px;
   width: 300px;
 }
@@ -98,17 +145,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: "Roboto", sans-serif;
 }
 
 #probnum {
-  font-family: "Roboto", sans-serif;
   font-size: 20px;
-  font-weight: bold;
+  font-weight: 800;
   color: black;
 }
 #timer {
-  font-family: "Inconsolata", monospace;
   font-size: 18px;
   color: #555;
   white-space: pre-wrap;
@@ -168,7 +212,6 @@ svg text {
   }
 
   > div:nth-child(n + 2) {
-    font-family: "Inconsolata", monospace;
     font-size: 14.5px;
 
     > div:nth-child(1) {
@@ -180,10 +223,9 @@ svg text {
   }
 
   > div:nth-child(1) {
-    font-family: "Roboto", sans-serif;
     font-size: 14px;
     text-transform: capitalize;
-    font-weight: bold;
+    font-weight: 800;
   }
 
   > div:nth-child(1) {
@@ -217,9 +259,6 @@ svg text {
 .blue {
   background: linear-gradient(to right, hsl(240, 0%, 73%), hsl(240, 100%, 73%));
 }
-
-
-
 
 .tooltip {
   position: relative;
@@ -257,25 +296,17 @@ svg text {
   visibility: visible;
 }
 
-.link-icons {
-  fill: #7e0000;
-  min-width: 30px;
-  min-height: 30px;
-}
-
-#link-icons-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  div {
-    width: 20px;
-  }
-}
-
 h3 {
   margin-top: 20px;
   margin-bottom: 5px;
+  font-size: 22px;
 }
 #list-wrapper > ul {
-  margin:0;
+  margin: 0;
+}
+
+a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

@@ -77,7 +77,7 @@ export function LevelSelector(game, size) {
 
     this.game.renderLoop() // we don't call requestAnimationFram because we need fcn side effect immediately
 
-    if (this.game.sum < 5000) {
+    if (this.game.sum < this.game.criteria) {
       this.game.probState = 2;
     } else {
       if (this.game.timer.total_S > 0) {
@@ -131,7 +131,7 @@ export function LevelSelector(game, size) {
       nodeToHigh.setAttribute("stroke-width", '2');
 
       requestAnimationFrame(this.game.renderLoop)
-      if (this.sum < 5000) {
+      if (this.sum < this.game.criteria) {
         this.game.probState = 2;
       } else {
         if (this.game.timer.total_S > 0) {
@@ -208,7 +208,7 @@ LevelSelector.prototype.createSelectorSvg = function (size) {
         let color;
         const timeFraction = time / 300;
 
-        if (score < 5000) {
+        if (score < this.game.criteria) {
           const colAngle = 120 - Math.floor((timeFraction > 1 ? 1 : timeFraction) * 120);
           color = `hsl(${colAngle}, 100%, 50%)`
           this.game.progress[2] += 1
@@ -347,10 +347,11 @@ LevelSelector.prototype.getColorVal = function (time = 0, score = 0) {
   let color;
   const timeFraction = time / 300;
 
-  if (score < 5000) {
+  if (score < this.game.criteria) {
     const colAngle = 120 - Math.floor((timeFraction > 1 ? 1 : timeFraction) * 120);
     color = `hsl(${colAngle}, 100%, 50%)`
     this.progress[0] += 1
+    console.log('here')
   } else {
     if (timeFraction > 0) {
       const satPercent = Math.floor((timeFraction > 1 ? 1 : timeFraction) * 100);

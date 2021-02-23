@@ -129,16 +129,16 @@ export const shapeGeoms = (tL) => {
 
   let offset = [2 * tL, 2 * tL];
 
-
+  let f = 0.04;
 
   let moveArr = [
-    [(-.02)*tL, (-.02)*tL],
-    [(.02)*tL, (-.02)*tL],
-    [(-.06)*tL, (.02)*tL], //pgram
-    [(.02)*tL, (.02)*tL], // square
-    [(.0)*tL, (.06)*tL], //mid tri
-    [(-.02)*tL, (.02)*tL],
-    [(.06)*tL, (.02)*tL],
+    [-f*tL, -f*tL],
+    [f*tL, -f*tL],
+    [-3*f*tL, f*tL], //pgram
+    [f*tL, f*tL], // square
+    [0*tL, 3*f*tL], //mid tri
+    [-f*tL, f*tL],
+    [3*f*tL, f*tL],
   ];
 
 
