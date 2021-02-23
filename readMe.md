@@ -12,9 +12,14 @@
 </h3>
 <br/>
 <p align="center">
-  <img width="480" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/collisionopt.gif">
+  <img width="480" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/collision_opt.gif">
 </p>
-
+<p align="center">
+  <img width="480" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/gameplay_opt.gif">
+</p>
+<p align="center">
+  <img width="480" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/slider_opt.gif">
+</p>
 
 
 
