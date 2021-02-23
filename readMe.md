@@ -12,7 +12,7 @@
 </h3>
 <br/>
 <p align="center">
-  <img width="270" height="auto" src="https://raw.githubusercontent.com/twpride/music-player-1/main/assets/demo/scrub-skip.gif">
+  <img width="480" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/collisionopt.gif">
 </p>
 
 
