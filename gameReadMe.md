@@ -1,23 +1,50 @@
-### Goal
+<h1 align="center">179 Tangrams</h1>
 
-- Move the puzzle pieces until they together form the shape matching that of the silhouette (shown top left)
-  - You must utilize all seven pieces and they cannot overlap one another
-- A timer starts immediately when you enter a level
-  - You can pause the timer at anytime, but the level blurs out
-  - Each box in the level selector is colored based on the elapsed time (see legend)
-  - Challenge yourself and others to get as many green boxes as possible!
+<div align="center" >
+  <a href="https://twpride.github.io/tangram/">
+  <h2 align="center">Live Site</h2>
+  </a>
+</div>
+<br/>
 
-### Controls to move pieces
-- Translation
-  - Mouse: Left click hold and drag
-  - Touch: Tap and hold and drag
-- Rotation
+<h3 align="center">
+  Gameplay
+</h3>
+<br/>
+<p align="center">
+  <img width="270" height="auto" src="https://raw.githubusercontent.com/twpride/music-player-1/main/assets/demo/scrub-skip.gif">
+</p>
+
+
+
+
+
+
+### Screen Shots
+
+
+
+### Overview
+- Tangram is a Chinese  puzzle consisting of seven flat polygons, called tans, which are put together to form shapes. 
+- The objective is to replicate a pattern (given only an outline) generally found in a puzzle book using all seven pieces without overlap.
+- Thanks to the Canvas API and JavaScript, you can now enjoy this classic puzzle, along with 179 unique problems, in the comfort of your favorite web browser (mobile and desktop)
+
+### Game Controls
+
+- Piece translation
+  - Mouse: Left click and drag
+  - Touch: Tap and drag
+- Piece rotation
   - Mouse: Right click and drag
-  - Two-finger touch: With 1 finger touching the piece, drag a second finger across the screen
-  - One-finger touch: Double tap. On the second tap, drag finger
-- Lifting a piece up (so it can move through another piece)
-  - Lifted pieces turn semi-transparent
-  - Mouse: double click and hold
-  - With touch: Long press and hold
-- Flipping the Parallelogram
-  - Click or tap the button below the play/pause button.
+  - Two-finger touch: With 1 finger touching the piece, drag with second finger
+  - One-finger touch: Double tap piece. Drag on second tap
+- Lifting a piece up
+  - Mouse: double click
+  - With touch: long press
+  - Lifted pieces can move through other pieces
+- Flipping the parallelogram
+  - Click on button below the play/pause button.
+- Exiting or pausing the puzzle
+  - Click the pause button, or press <Escape>
+
+
