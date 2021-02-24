@@ -74,10 +74,10 @@ export class TangramGame {
     });
 
 
-    this.silContainer = document.getElementById('silcanvas');
+    // this.silContainer = document.getElementById('silcanvas');
     this.silCanvas.width = this.silCanvWH[0];
     this.silCanvas.height = this.silCanvWH[1];
-    this.silContainer.appendChild(this.silCanvas);
+    // this.silContainer.appendChild(this.silCanvas);
 
 
     this.ofc.width = this.silCanvWH[0];
@@ -389,7 +389,6 @@ export class TangramGame {
 
     const movingShapePts = this.shapes[movingShapeIdx].vertices;
 
-    delta = delta.map(ele => ele * 1.2)
 
     // iterate thru all static shapes, find worst case penetration in x and y
     for (let i = 0; i < this.shapes.length; i++) {
@@ -888,9 +887,9 @@ export class TangramGame {
     }
 
 
-    this.silCtx.fillStyle = '#00FF00';
-    this.silCtx.font = '50px serif';
-    this.silCtx.fillText(this.sum.toString(), 400, 100);
+    // this.silCtx.fillStyle = '#00FF00';
+    // this.silCtx.font = '50px serif';
+    // this.silCtx.fillText(this.sum.toString(), 400, 100);
 
     if (this.animating) {
       requestAnimationFrame(this.renderLoop);
@@ -901,3 +900,7 @@ export class TangramGame {
   }
 
 }
+
+
+
+
