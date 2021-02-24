@@ -8,7 +8,6 @@
  <img width="360" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/gamefull_opt.gif">
 </p>
 
-
 179 Tangrams is a browser implementation of a classic Chinese puzzle using plain JavaScript(no packages) and the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). The puzzle consists of seven polygons tiles, which are put together to form shapes. The objective is to replicate a pattern (generally found in a puzzle book) using all seven tiles without overlap.
 
 
@@ -17,20 +16,24 @@
 ## Solve state detection
 
 ### The motivation: timed gameplay
-A dimension that is unique to this implementation Tangram is that the player is scored by how quickly he/she can solve a puzzle. A timer automatically starts when the player enters a level and is only stopped whenever the user exits (by hitting pause, or switching tabs) or when the puzzle is solved. This added timing component meant that the program would constantly need to check whether the puzzle had been solved. 
+A dimension that is unique to this implementation Tangram is that the player is scored by how quickly he/she can solve a puzzle. A timer automatically starts when the player enters a level and is only stopped whenever the user exits (by hitting pause, or switching tabs) or when the puzzle is solved. This added timing component meant that the program would need a quick and cheap way to constantly check whether the puzzle had been solved. 
 
-### Counting pixels on a secondary &lt;canvas&gt element;
-For the aforementioned task, a raster based overlap detection algorithm was developed. The approach starts out with painting the silhouette then the tangram tiles on a secondary canvas that is off-screen. By ensuring that the geometric centers of the silhouette and the tangram tiles align, it follows that there is maximum overlap between the tangram tiles and the silhouette when the puzzle is solved. Conversely, this means that the non-overlapping areas of the silhouette is at a minimum.
- 
-To detect this solved state where the non-overlapping silhouette area is at a minimum, we set both the canvas background and the tangram shapes to black (rgb(0,0,0)) while the silhouette set to any non-black color which in our case was cyan, most importantly with a red color value of 1, rgb(1,255,255). Since the tangrams shapes are painted after the silhouette, any overlapping areas will be set to black, whereas the non-overlapping areas of the silhouette remain cyan.
- 
-After every tile move, the program sums the red pixel values of all the pixels on the secondary canvas. Since we had set the silhouette to have a red color value of 1, the sum is also the number of pixels of silhouette that is non-overlapping. If the non-overlap pixel count is below a certain threshold (empirically determined), we can conclude that the player has solved the puzzle. 
+### The Solution: counting pixels on a secondary &lt;canvas&gt;
+
+For the aforementioned task, a raster based overlap detection algorithm was developed. The approach involed painting the silhouette and tiles onto a secondary canvas, making sure the two entities are centered with respect to one another, and then counting the non-overlapping pixels on the silhoutte.
+
+The screenshot below shows live game play with the secondary canvas overlayed on top. As the tiles on the main canvas moves, the secondary canvas is also updated. The green counter is a live reading of sum of cyan pixels currently displayed. Notice that when the when the probem solved, the green coutner drops to below 6000, which is the solve threshold, and the timer stops.
 
 <p align="center">
  <img width="360" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/sil_opt.gif">
 </p>
 
-The screenshot above shows live game play with the secondary canvas overlayed on top. As the tiles on the main canvas moves, the secondary canvas is also updated. The green counter is a live reading of sum of cyan pixels currently displayed. Notice that when the when the probem solved, the green coutner drops to below 5000 and the timer stops. 
+### Algorithm details
+We start out painting the silhouette then the tangram tiles on a secondary canvas that is off-screen. By ensuring that the geometric centers of the silhouette and the tangram tiles align, it follows that there is maximum overlap between the tangram tiles and the silhouette when the puzzle is solved. Conversely, this means that the non-overlapping areas of the silhouette is at a minimum.
+ 
+To detect this solved state, we set both the background and the tile to black (rgb(0,0,0)) while the silhouette set to any non-black color which in our case was cyan, most importantly with a red color value of 1, rgb(1,255,255). Since the tangrams shapes are painted after the silhouette, any overlapping areas will be set to black, whereas the non-overlapping areas of the silhouette remain cyan.
+ 
+After every tile move, the program sums the red pixel values of all the pixels on the secondary canvas. Since we had set the silhouette to have a red color value of 1, the sum is also the number of pixels of silhouette that is non-overlapping. If the non-overlap pixel count is below a certain threshold (empirically determined), we can conclude that the player has solved the puzzle. 
 
 
 ## A custom carousel element
@@ -51,13 +54,95 @@ The heat map adds a badge-like reward mechanism to the gameplay experience. The 
 To allow for smooth transition between pages, the carousel utilizes a [Bezier easing function](https://github.com/gre/bezier-easing) to generate the snapping animation to the nearest page.
  
 ## Collision detection
-Adding realism to the game play, the program checks for collision between the puzzle tiles. After every tile move, if there was a collision, the penetration amount between the penetrating vertex and the penetrated edge is calculated.
- 
-The moving tile is then shifted back by the calculated intersection amount ensuring that the tiles are no longer colliding
- 
 <p align="center">
  <img width="480" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/collision_opt.gif">
 </p>
+
+Adding realism to the game play, the program checks for collision between the puzzle tiles. After every tile move, if there was a collision, the penetration amount between the penetrating vertex and the penetrated edge is calculated.
+
+Before we calculate the penetration amount, we identify all the vertices that have penetrated another polygon. This by iterating through each vertex polygon combination possible (with some pruning) running the following funciton
+
+```javascript
+const toVec = (a, b) => [b[0] - a[0], b[1] - a[1]];
+const cross = (v, w) => v[0] * w[1] - v[1] * w[0];
+
+function insidePoly(vertices, p) {
+  // important!! this assumes vertices are arranged in counter clockwise order
+  let left = vertices[vertices.length - 1];
+  for (let i = 0; i < vertices.length; i++) {
+    const center = vertices[i];
+    if (cross(toVec(center, left), toVec(center, p)) > 0) {
+      return false;
+    }
+    left = center;
+  }
+  return true;
+}
+
+```
+After we identify the penetrating vertice / penetrated polygon pair, we check the penetrating vertex's latest path segment (defined by its last two recorded positions) for intersection with each edge of the penetrated polygon. Knowing the penetrating vertex and penetrated edge, we calculate the the perpendicular component between them. This perpendicular vector is exactly how much the vertex has penetrated the polygon. The code snippet for this procedure is pasted below. Note that `calcPenetration()` calls `findIntersection()`
+
+```javascript
+export function findIntersection(p, r, q, s) {
+  /*
+    Based on: https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+
+    q+s  p+r
+      \/__________ q+u*s
+      /\  
+     /  \
+    p    q
+    
+    u = (q − p) × r / (r × s)
+    when r × s = 0, the lines are either colinear or parallel
+
+    function returns u
+    for intersection to exist, 0<u<1
+  */
+  const q_minus_p = toVec(p, q);
+  const r_cross_s = cross(r, s);
+  if (r_cross_s === 0) return null;
+  return cross(q_minus_p, r) / r_cross_s;
+}
+
+
+export const dot = (v, w) => v[0] * w[0] + v[1] * w[1];
+export function calcPenetration(sVertices, p, lastMouseMove) {
+  /*
+    determine if last mouse move caused a state change for point p
+    from no penetration to penetration into shape s (represented by sVertices)
+
+    if such state change occured, return the penetration quantity in vector form with the unit of pixels
+    if not, this return null
+  */
+  let prev = sVertices[sVertices.length - 1];
+
+  // scale last mouse move vector by 20%, empirically this has been found to help 
+  // with interseciton detection sensitivity
+  lastMouseMove = lastMouseMove.map(ele => ele * 1.2);
+
+  // iterate through each polygon edge, return if penetration is encountered
+  for (let k = 0; k < sVertices.length; k++) {
+    const currVertex = sVertices[k];
+    const edgeVec = toVec(currVertex, prev); // vector respresenting current polygon edge
+    const res = findIntersection(currVertex, edgeVec, p, lastMouseMove)
+    if (res
+      && res > 0 // res==0, when p started on on the polygon edge
+      && res < 1 // res==1, when p is on polygon edge after mouse move
+    ) {
+      // point indeed penetrated the current polygon edge
+      // calculate and return perpendicular component between p and the polygon edge
+      const p_currVertex_vec = toVec(p, currVertex); //
+      const precalc = dot(p_currVertex_vec, edgeVec) / (edgeVec[0] ** 2 + edgeVec[1] ** 2);
+      return p_currVertex_vec.map((ele, idx) => ele - precalc * edgeVec[idx]);
+    }
+    prev = currVertex;
+  }
+  return null;
+}
+```
+Knowing this penetration vector, the moving tile is then shifted back by the this exact amount, ensuring that the tiles are just touching, but not intersecting
+
 
 ## Puzzle generation
 Instead of generating the problem manually, examples of tangram problems found online were leveraged. The 179 puzzles in this game was taken from a [puzzle booklet](https://web.archive.org/web/20200203050759/https://www.cs.brandeis.edu/~storer/JimPuzzles/ZPAGES/zzzRichter08-AnchorPuzzle.html) first published in 1890 by the Richter Company of Germany in 1890. The problems were extracted from scanned images of the puzzle booklet with a python script using OpenCv's `findContours()`.

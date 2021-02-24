@@ -1,5 +1,6 @@
 
 export const toVec = (a, b) => [b[0] - a[0], b[1] - a[1]];
+export const cross = (v, w) => v[0] * w[1] - v[1] * w[0];
 
 export function insidePoly(vertices, p) {
   // important!! this assumes vertices are arranged in counter clockwise order
@@ -14,8 +15,6 @@ export function insidePoly(vertices, p) {
   return true;
 }
 
-export const cross = (v, w) => v[0] * w[1] - v[1] * w[0];
-export const dot = (v, w) => v[0] * w[0] + v[1] * w[1];
 
 export function findIntersection(p, r, q, s) {
   /*
@@ -40,6 +39,7 @@ export function findIntersection(p, r, q, s) {
 }
 
 
+export const dot = (v, w) => v[0] * w[0] + v[1] * w[1];
 export function calcPenetration(sVertices, p, lastMouseMove) {
   /*
     determine if last mouse move caused a state change for point p
@@ -65,7 +65,7 @@ export function calcPenetration(sVertices, p, lastMouseMove) {
     ) {
       // point indeed penetrated the current polygon edge
       // calculate and return perpendicular component between p and the polygon edge
-      const p_currVertex_vec = toVec(p, currVertex);
+      const p_currVertex_vec = toVec(p, currVertex); //
       const precalc = dot(p_currVertex_vec, edgeVec) / (edgeVec[0] ** 2 + edgeVec[1] ** 2);
       return p_currVertex_vec.map((ele, idx) => ele - precalc * edgeVec[idx]);
     }
