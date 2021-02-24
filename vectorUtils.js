@@ -1,7 +1,4 @@
-export const cross = (v, w) => v[0] * w[1] - v[1] * w[0];
-export const dot = (v, w) => v[0] * w[0] + v[1] * w[1];
 
-export const toVec = (a, b) => [b[0] - a[0], b[1] - a[1]];
 
 export const vecAdd = (a, b) => [a[0] + b[0], a[1] + b[1]];
 
@@ -19,22 +16,11 @@ export function insidePoly(vertices, p) {
 }
 
 
-export function multMatrixVector(matrix, vector) {
-  if (!matrix.length % vector.length) {
-    throw new Error('invalid matrix or vector dimensions')
-  };
-  const nr = matrix.length / vector.length;
-  let res = []
-  for (let i = 0; i < nr; i++) {
-    res[i] = vector.reduce(
-      (acc, ele, idx) => acc + ele * matrix[i * vector.length + idx]
-      , 0
-    )
-  }
-  return res;
-}
 
 
+export const cross = (v, w) => v[0] * w[1] - v[1] * w[0];
+export const dot = (v, w) => v[0] * w[0] + v[1] * w[1];
+export const toVec = (a, b) => [b[0] - a[0], b[1] - a[1]];
 
 export function findIntersection(p, r, q, s) {
   const q_minus_p = toVec(p, q);
@@ -53,7 +39,7 @@ export function calcPenetration(vertices, p, lastMouseMove) {
     const edgeVec = toVec(curr, prev);
     const res = findIntersection(curr, edgeVec, p, lastMouseMove)
     if (res
-      && res >= 0 // res==0, when point(q) start out already on line (p,p+r)
+      // && res >= 0 // res==0, when point(q) start out already on line (p,p+r)
       && res < 1 // res==1, when mouse pos after lastMouseMove is right on line (p,p+r)
     ) {
       const p_curr_vec = toVec(p, curr);
@@ -66,8 +52,20 @@ export function calcPenetration(vertices, p, lastMouseMove) {
 }
 
 
-
-
+export function multMatrixVector(matrix, vector) {
+  if (!matrix.length % vector.length) {
+    throw new Error('invalid matrix or vector dimensions')
+  };
+  const nr = matrix.length / vector.length;
+  let res = []
+  for (let i = 0; i < nr; i++) {
+    res[i] = vector.reduce(
+      (acc, ele, idx) => acc + ele * matrix[i * vector.length + idx]
+      , 0
+    )
+  }
+  return res;
+}
 
 export function rotatePoints(deg, vertices, rotationPt) {
   const radians = deg * Math.PI / 180;

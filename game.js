@@ -74,10 +74,10 @@ export class TangramGame {
     });
 
 
-    // this.silContainer = document.getElementById('silcanvas');
+    this.silContainer = document.getElementById('silcanvas');
     this.silCanvas.width = this.silCanvWH[0];
     this.silCanvas.height = this.silCanvWH[1];
-    // this.silContainer.appendChild(this.silCanvas);
+    this.silContainer.appendChild(this.silCanvas);
 
 
     this.ofc.width = this.silCanvWH[0];
@@ -400,7 +400,6 @@ export class TangramGame {
         if (insidePoly(movingShapePts, shapePts[j])) {
           const u = calcPenetration(movingShapePts, shapePts[j], delta)
           if (!u) continue;
-
           u.forEach((ele, idx) => {
             if (Math.abs(moveBack[idx]) < Math.abs(ele)) {
               moveBack[idx] = (-ele < 0 ? -1 : 1) * Math.max(Math.abs(moveBack[idx]), Math.abs(ele))
@@ -408,7 +407,6 @@ export class TangramGame {
           })
         }
       }
-
       for (let j = 0; j < movingShapePts.length; j++) { //moving pts inside static
         if (insidePoly(shapePts, movingShapePts[j])) {
           const u = calcPenetration(shapePts, movingShapePts[j], delta.map(ele => -1 * ele));
@@ -420,7 +418,6 @@ export class TangramGame {
           })
         }
       }
-
     }
     return moveBack;
   }
@@ -890,10 +887,10 @@ export class TangramGame {
       this.timer.stop()
     }
 
-    // this.ctx.fillStyle = 'green';
-    // this.ctx.fillRect(...this.centroidTot, 2, 2)
-    // this.ctx.fillText(this.sum.toString(), 50, 550);
-    // this.ctx.fillText(this.probNum.toString(), 50, 500);
+
+    this.silCtx.fillStyle = '#00FF00';
+    this.silCtx.font = '50px serif';
+    this.silCtx.fillText(this.sum.toString(), 400, 100);
 
     if (this.animating) {
       requestAnimationFrame(this.renderLoop);
