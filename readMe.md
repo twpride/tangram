@@ -8,21 +8,25 @@
  <img width="360" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/gamefull_opt.gif">
 </p>
 
-179 Tangrams is a browser implementation of a classic Chinese puzzle using plain JavaScript(no packages) and the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). The puzzle consists of seven polygons, which are put together to form shapes. The objective is to replicate a pattern (generally found in a puzzle book) using all seven pieces without overlap.
+
+179 Tangrams is a browser implementation of a classic Chinese puzzle using plain JavaScript(no packages) and the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). The puzzle consists of seven polygons tiles, which are put together to form shapes. The objective is to replicate a pattern (generally found in a puzzle book) using all seven tiles without overlap.
+
 
 # Challenges
  
 ## Solve state detection
 
-Detection of the puzzle solve state is done using a raster based method of overlap detection. This approach involves painting the silhouette tehn the tangram pieces on a secondary canvas that is off-screen.
+A dimension that is unique to this implementation Tangram is that the player is scored by how quickly he/she can solve a puzzle. A timer automatically starts when the player enters a level and is only stopped whenever the user exits (by hitting pause, or switching tabs) or when the puzzle is solved. 
 
-By ensuring that the geometric centers of the silhouette and the tangram pieces align, it follows that there is maximum overlap between the tangram pieces and the silhouette when the puzzle is solved. Conversely, this means that the non-overlapping areas of the silhouette is at a minimum.
+This added timing component meant that the program would constantly need to check whether the puzzle had been solved. For this task, a raster based overlap detection algorithm was developed. 
+
+The approach starts out with painting the silhouette then the tangram tiles on a secondary canvas that is off-screen. By ensuring that the geometric centers of the silhouette and the tangram tiles align, it follows that there is maximum overlap between the tangram tiles and the silhouette when the puzzle is solved. Conversely, this means that the non-overlapping areas of the silhouette is at a minimum.
  
 To detect this solved state where the non-overlapping silhouette area is at a minimum, we set both the canvas background and the tangram shapes to black (rgb(0,0,0)) while the silhouette set to any non-black color which in our case was cyan, most importantly with a red color value of 1, rgb(1,255,255). Since the tangrams shapes are painted after the silhouette, any overlapping areas will be set to black, whereas the non-overlapping areas of the silhouette remain cyan.
  
-After every piece move, the program sums the red pixel values of all the pixels on the secondary canvas. Since we had set the silhouette to have a red color value of 1, the sum is also the number of pixels of silhouette that is non-overlapping. If the non-overlap pixel count is below a certain threshold (empirically determined), we can conclude that the player has solved the puzzle. 
+After every tile move, the program sums the red pixel values of all the pixels on the secondary canvas. Since we had set the silhouette to have a red color value of 1, the sum is also the number of pixels of silhouette that is non-overlapping. If the non-overlap pixel count is below a certain threshold (empirically determined), we can conclude that the player has solved the puzzle. 
 
-The screenshot below shows live game play with the secondary canvas overlayed on top. As the pieces on the main canvas moves, the secondary canvas is also updated. The green counter is a live reading of sum of cyan pixels currently displayed. Notice that when the when the probem solved, the green coutner drops to below 5000 and the timer stops. 
+The screenshot below shows live game play with the secondary canvas overlayed on top. As the tiles on the main canvas moves, the secondary canvas is also updated. The green counter is a live reading of sum of cyan pixels currently displayed. Notice that when the when the probem solved, the green coutner drops to below 5000 and the timer stops. 
  
 <p align="center">
  <img width="360" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/sil_opt.gif">
@@ -30,32 +34,28 @@ The screenshot below shows live game play with the secondary canvas overlayed on
 
 <br/>
 
-
-## Multifunctional carousel: easing animation and integrated heatmap
+## A custom carousel for the puzzle selector
 
 <p align="center">
  <img width="480" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/slider_opt.gif">
 </p>
 
-### Timing aspect 
-Players are scored by how quickly he/she can solve a level. Once the player clicks on the level icon to start the puzzle, and a timer immediate starts. The timer is stopped whenever the user exits the level (by hitting pause, or switching to another tab) or when the puzzle is solved.
+### Hover preview
+As the use hover the mouse over each problem icon in the carousel, the game canvas updates with a preview of the problem and the current state of the tiles in that level. The silhouette for unsolved problems are blurred in the preview to prevent the player from getting a head start before starting the timer.
 
-In the level selector carousel, the player can preview the problem hovering over the level icon. Unsolved problems are blurred in the preview to prevent the player from getting a head start before starting the timer.
+### Integrated heatmap
+The carousel also functions as a heat map that tracks the player's progress. The heat maps colors each level icon depending on elapsed time and solve state of each level. The heatmap was generated by formatting an [HSL](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#hsl_colors) color string which becomes an attributes of a SVG [&lt;rect&gt;](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/rect) element.
 
-### Timing aspect 
-The carousel also functions as a heat map that tracks the player's progress. The heat maps colors each level icon depending on elapsed time and solve state of each level.The heat map adds a badge-like reward mechanism to the gameplay experience. The user may be motivated to fill up the entire carousel with green boxes :)
-
-### Heatmap
-The heatmap was generated by formatting an [HSL](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#hsl_colors) color string which becomes an attributes of a SVG [&lt;rect&gt;](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/rect) element.
+The heat map adds a badge-like reward mechanism to the gameplay experience. The user may be motivated to fill up the entire carousel with green boxes :)
  
-### Easing animation
+### Page snap easing animation
 To allow for smooth transition between pages, the carousel utilizes a [Bezier easing function](https://github.com/gre/bezier-easing) to generate the animation of snapping to a page.
 
  
-## Collision Detection
-To add realism to the game play, the program checks for collision between the puzzle pieces. After every piece move, ff there was a collision, the penetration amount between the penetrating vertex and the penetrated edge is calculated.
+## Collision detection
+Adding realism to the game play, the program checks for collision between the puzzle tiles. After every tile move, if there was a collision, the penetration amount between the penetrating vertex and the penetrated edge is calculated.
  
-The moving piece is then shifted back by the calculated intersection amount ensuring that the pieces are no longer colliding
+The moving tile is then shifted back by the calculated intersection amount ensuring that the tiles are no longer colliding
  
 <p align="center">
  <img width="480" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/collision_opt.gif">
@@ -66,14 +66,14 @@ The moving piece is then shifted back by the calculated intersection amount ensu
 Instead of generating the problem manually, examples of tangram problems found online were leveraged. The 179 puzzles in this game was taken from a [puzzle booklet](https://web.archive.org/web/20200203050759/https://www.cs.brandeis.edu/~storer/JimPuzzles/ZPAGES/zzzRichter08-AnchorPuzzle.html) first published in 1890 by the Richter Company of Germany in 1890. The problems were extracted from scanned images of the puzzle booklet with a python script using OpenCv's `findContours()`.
  
 ## Game Controls
-- Piece translation
+- tile translation
   - Mouse: Left click and drag
   - Touch: Tap and drag
-- Piece rotation
+- tile rotation
   - Mouse: Right click and drag
-  - Two-finger touch: With 1 finger touching the piece, drag with second finger
-  - One-finger touch: Double tap piece. Drag on second tap
-- Lifting a piece up (so it can move through other pieces)
+  - Two-finger touch: With 1 finger touching the tile, drag with second finger
+  - One-finger touch: Double tap tile. Drag on second tap
+- Lifting a tile up (so it can move through other tiles)
   - Mouse: double click
   - With touch: long press
 - Flipping the parallelogram
