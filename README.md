@@ -39,7 +39,7 @@ After every tile move, the program sums the red pixel values of all the pixels o
 ## A custom carousel element
 
 <p align="center">
- <img width="480" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/slider_opt.gif">
+ <img width="360" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/slider_opt.gif">
 </p>
 
 ### Hover preview
@@ -55,7 +55,7 @@ The heat map adds a badge-like reward mechanism to the gameplay experience. The 
  
 ## Collision detection
 <p align="center">
- <img width="480" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/collision_opt.gif">
+ <img width="360" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/collision_opt.gif">
 </p>
 
 Adding realism to the game play, the program checks for collision between the puzzle tiles. After every tile move, if there was a collision, the penetration amount between the penetrating vertex and the penetrated edge is calculated.
