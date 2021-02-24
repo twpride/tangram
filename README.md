@@ -8,7 +8,7 @@
  <img width="360" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/gamefull_opt.gif">
 </p>
 
-179 Tangrams is a browser implementation of a classic Chinese puzzle using plain JavaScript(no packages) and the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). The puzzle consists of seven polygons tiles, which are put together to form shapes. The objective is to replicate a pattern (generally found in a puzzle book) using all seven tiles without overlap.
+179 Tangrams is a browser implementation of the classic Chinese puzzle using plain JavaScript(no packages) and the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). The puzzle consists of seven polygons tiles, which are put together to form shapes. The objective is to replicate a given pattern using all seven tiles without overlap.
 
 
 # Challenges
@@ -16,13 +16,13 @@
 ## Puzzle solve state detection
 
 ### Motivation: timed gameplay
-A dimension that is unique to this implementation Tangram is that the player is scored by how quickly he/she can solve a puzzle. A timer automatically starts when the player enters a level and is only stopped whenever the user exits (by hitting pause, or switching tabs) or when the puzzle is solved. This added timing component meant that the program would need a quick and cheap way to constantly check whether the puzzle had been solved. 
+A dimension that is unique to this implementation of Tangram is that the player is scored by how quickly he/she can solve a puzzle. A timer automatically starts when the player enters a level and is only stopped whenever the user exits (by hitting pause, or switching tabs) or when the puzzle is solved. This added timing component means that the program would need a quick and cheap way to constantly check whether the puzzle had been solved. 
 
 ### Solution: counting pixels on a secondary &lt;canvas&gt;
 
-For the aforementioned task, a raster based overlap detection algorithm was developed. The approach involed painting the silhouette and tiles onto a secondary canvas, making sure the two entities are centered with respect to one another, and then counting the non-overlapping pixels on the silhoutte.
+For the aforementioned task, a raster based overlap detection algorithm was developed. The approach involves painting the silhouette and tiles onto a secondary canvas, making sure the two entities are centered with respect to one another, and then counting the non-overlapping pixels on the silhoutte.
 
-The screenshot below shows live game play with the secondary canvas overlayed on top. As the tiles on the main canvas moves, the secondary canvas is also updated. The green counter is a live reading of sum of cyan pixels currently displayed. Notice that when the when the probem solved, the green coutner drops to below 6000, which is the solve threshold, and the timer stops.
+The screenshot below shows live gameplay with the secondary canvas overlayed on top. As the tiles on the main canvas moves, the secondary canvas is also updated. The green counter is a live reading of sum of total number of non-overlapping silhouette pixels. Notice that when the when the probem solved, the green coutner drops to below 6000, which is the solve threshold, and the timer stops.
 
 <p align="center">
  <img width="360" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/sil_opt.gif">
@@ -33,7 +33,7 @@ We start out painting the silhouette then the tangram tiles on a secondary canva
  
 To detect this solved state, we set both the background and the tile to black (rgb(0,0,0)) while the silhouette set to any non-black color which in our case was cyan, most importantly with a red color value of 1, rgb(1,255,255). Since the tangrams shapes are painted after the silhouette, any overlapping areas will be set to black, whereas the non-overlapping areas of the silhouette remain cyan.
  
-After every tile move, the program sums the red pixel values of all the pixels on the secondary canvas. Since we had set the silhouette to have a red color value of 1, the sum is also the number of pixels of silhouette that is non-overlapping. If the non-overlap pixel count is below a certain threshold (empirically determined), we can conclude that the player has solved the puzzle. 
+After every tile move, the program sums the red pixel values of all the pixels on the secondary canvas (using [CanvasRenderingContext2D.getImageData()](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getImageData)). Since we had set the silhouette to have a red color value of 1, the sum is also the number of pixels of silhouette that is non-overlapping. If the non-overlap pixel count is below a certain threshold (empirically determined), we can conclude that the player has solved the puzzle. 
 
 
 ## A custom carousel element
@@ -63,10 +63,10 @@ Adding realism to the game play, the program checks for collision between the pu
 Before we calculate the penetration amount, we identify all the vertices that have penetrated another polygon. This by iterating through each vertex polygon combination possible (with some pruning) running the following funciton
 
 ```javascript
-const toVec = (a, b) => [b[0] - a[0], b[1] - a[1]];
-const cross = (v, w) => v[0] * w[1] - v[1] * w[0];
+export const toVec = (a, b) => [b[0] - a[0], b[1] - a[1]];
+export const cross = (v, w) => v[0] * w[1] - v[1] * w[0];
 
-function insidePoly(vertices, p) {
+export function insidePoly(vertices, p) {
   // important!! this assumes vertices are arranged in counter clockwise order
   let left = vertices[vertices.length - 1];
   for (let i = 0; i < vertices.length; i++) {
@@ -145,7 +145,7 @@ Knowing this penetration vector, the moving tile is then shifted back by the thi
 
 
 ## Puzzle generation
-Instead of generating the problem manually, examples of tangram problems found online were leveraged. The 179 puzzles in this game was taken from a [puzzle booklet](https://web.archive.org/web/20200203050759/https://www.cs.brandeis.edu/~storer/JimPuzzles/ZPAGES/zzzRichter08-AnchorPuzzle.html) first published in 1890 by the Richter Company of Germany in 1890. The problems were extracted from scanned images of the puzzle booklet with a [python script](https://github.com/twpride/tangram/blob/master/scratch/process179.py) using OpenCv's `findContours()`. 
+Instead of generating the problem manually, examples of Tangram problems found online were leveraged. The 179 puzzles in this game was taken from a [puzzle booklet](https://web.archive.org/web/20200203050759/https://www.cs.brandeis.edu/~storer/JimPuzzles/ZPAGES/zzzRichter08-AnchorPuzzle.html) first published in 1890 by the Richter Company of Germany in 1890. The problems were extracted from scanned images of the puzzle booklet with a [python script](https://github.com/twpride/tangram/blob/master/scratch/process179.py) using OpenCv's `findContours()`. 
  
 
 # Features to add
