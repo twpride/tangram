@@ -5,12 +5,35 @@
  Live Site
  </a>
 </div>
- 
+
+<p align="center">
+ <img width="360" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/gameplay_opt.gif">
+</p>
+
+
+## Overview 
 179 Tangrams is a browser implementation of a classic Chinese puzzle using JavaScript and the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). The puzzle consists of seven polygons, which are put together to form shapes. The objective is to replicate a pattern (given only an outline) generally found in a puzzle book using all seven pieces without overlap 
 <br/>
 <br/>
 
 
+# Challenges
+ 
+## Solve state detection
+
+
+<p align="center">
+ <img width="360" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/sil_opt.gif">
+</p>
+ 
+Detection of the puzzle solve state is done using a raster based method of overlap detection. This approach involves painting the silhouette tehn the tangram pieces on a secondary canvas that is off-screen.
+
+By ensuring that the geometric centers of the silhouette and the tangram pieces align, it follows that there is maximum overlap between the tangram pieces and the silhouette when the puzzle is solved. Conversely, this means that the non-overlapping areas of the silhouette is at a minimum.
+ 
+To detect this solved state where the non-overlapping silhouette area is at a minimum, we set both the canvas background and the tangram shapes to black (rgb(0,0,0)) while the silhouette set to any non-black color which in our case was cyan, most importantly with a red color value of 1, rgb(1,255,255). Since the tangrams shapes are painted after the silhouette, any overlapping areas will be set to black, whereas the non-overlapping areas of the silhouette remain cyan.
+ 
+After every piece move, the program sums the red pixel values of all the pixels on the secondary canvas. Since we had set the silhouette to have a red color value of 1, the sum is also the number of pixels of silhouette that is non-overlapping. If the non-overlap pixel count is below a certain threshold (empirically determined), we can conclude that the player has solved the puzzle. 
+ 
  
 
 <br/>
@@ -21,12 +44,7 @@
   Custom carousel element with integrated heat map showing game progress
 </h3>
 
- 
-https://github.com/twpride/tangram/blob/0c07e642bfcd7f677e55f7b4df2e97870f300b03/cubicBezier.js#L28-L40
- 
- 
-.
- 
+
  
 
  
@@ -52,28 +70,7 @@ https://github.com/twpride/tangram/blob/0c07e642bfcd7f677e55f7b4df2e97870f300b03
 </p>
 
 
- 
-# Solve state detection
 
-<p align="center">
- <img width="480" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/gameplay_opt.gif">
-</p>
-
- 
-- Detection of the puzzle solve state is done using a raster based method of overlap detection.
- 
-- Following every piece move, the silhouette followed by the tangram pieces were painted onto a secondary canvas.
- 
-- By ensuring that the geometric centers of the silhouette and the tangram pieces align, it follows that there is maximum overlap between the tangram pieces and the silhouette when the puzzle is solved. Conversely, this means that the non-overlapping areas of the silhouette is at a minimum.
- 
-- To detect this solved state where the non-overlapping silhouette area is at a minimum, we set both the canvas background and the tangram shapes to black (rgb(0,0,0)) while the silhouette set to any non-black color which in our case was cyan, most importantly with a red color value of 1, rgb(1,255,255).
- 
-- Since the tangrams shapes are painted after the silhouette, any overlapping areas will be set to black, whereas the non-overlapping areas of the silhouette remain cyan.
- 
-- After every piece move, the program sums the red pixel values of all the pixels on the secondary canvas. Since we had set the silhouette to have a red color value of 1, the sum is also the number of pixels of silhouette that is non-overlapping.
-
-If the non-overlap pixel count is below a certain threshold (empirically determined), we can conclude that the player has solved the puzzle. 
- 
  
 
 <h3 align="center">
