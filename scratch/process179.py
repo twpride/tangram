@@ -10,7 +10,6 @@ filelist = os.listdir(folderpath)
 filelist.sort(key=lambda x: int(x[3:-4]))
 res = []
 
-print(filelist)
 for f in range(len(filelist)):
 
   im = cv.imread(folderpath + filelist[f])
@@ -21,7 +20,6 @@ for f in range(len(filelist)):
 
   contours, hi = cv.findContours(thresh, cv.RETR_CCOMP,
                                  cv.CHAIN_APPROX_TC89_KCOS)
-  #  cv.CHAIN_APPROX_NONE )
 
   tt = 0
   for j in range(len(contours)):
@@ -57,14 +55,13 @@ for f in range(len(filelist)):
           break
 
     normalizedCoord = (coord - np.array([m10, m01]) / m00)
-    # breakpoint()
+
     xmin,ymin = np.nanmin(normalizedCoord, axis=0)
     xmax,ymax = np.nanmax(normalizedCoord, axis=0)
     normalizedCoord = normalizedCoord.tolist()
     normalizedCoord.append(m00)
     normalizedCoord.append([xmin,xmax,ymin,ymax])
     res.append(normalizedCoord)
-
 
 with open('../problemsData.js', 'w') as outfile:
   outfile.write('export const problems = ')
