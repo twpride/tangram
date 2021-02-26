@@ -1,8 +1,8 @@
-
 export const toVec = (a, b) => [b[0] - a[0], b[1] - a[1]];
 export const cross = (v, w) => v[0] * w[1] - v[1] * w[0];
 
 export function insidePoly(vertices, p) {
+  // checks if point p in located inside polygon with def by the vertices argment
   // important!! this assumes vertices are arranged in counter clockwise order
   let left = vertices[vertices.length - 1];
   for (let i = 0; i < vertices.length; i++) {
@@ -15,10 +15,9 @@ export function insidePoly(vertices, p) {
   return true;
 }
 
-
 export function findIntersection(p, r, q, s) {
   /*
-    Based on: https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+    Based on: https://stackoverflow.com/questions/563198/
 
     q+s  p+r
       \/__________ q+u*s
@@ -45,7 +44,7 @@ export function calcPenetration(sVertices, p, lastMouseMove) {
     determine if last mouse move caused a state change for point p
     from no penetration to penetration into shape s (represented by sVertices)
 
-    if such state change occured, return the penetration quantity in vector form with the unit of pixels
+    if such state change occured, return the penetration vector
     if not, this return null
   */
   let prev = sVertices[sVertices.length - 1];
@@ -73,7 +72,6 @@ export function calcPenetration(sVertices, p, lastMouseMove) {
   }
   return null;
 }
-
 
 export function multMatrixVector(matrix, vector) {
   if (!matrix.length % vector.length) {

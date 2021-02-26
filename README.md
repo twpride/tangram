@@ -5,10 +5,12 @@
  </a>
 </div>
 <p align="center">
- <img width="360" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/gamefull_opt.gif">
+ <video controls height="480" src="https://howardhwang.s3-us-west-1.amazonaws.com/gamefull.mp4"></video>
 </p>
 
 179 Tangrams is a browser implementation of the classic Chinese puzzle using plain JavaScript(no packages) and the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). The puzzle consists of seven polygons tiles, which are put together to form shapes. The objective is to replicate a given pattern using all seven tiles without overlap.
+
+
 
 
 # Challenges
@@ -58,15 +60,18 @@ The heat map adds a badge-like reward mechanism to the gameplay experience. The 
  <img width="360" height="auto" src="https://raw.githubusercontent.com/twpride/tangram/master/demo/collision_opt.gif">
 </p>
 
-Adding realism to the game play, the program checks for collision between the puzzle tiles. After every tile move, if there was a collision, the penetration amount between the penetrating vertex and the penetrated edge is calculated.
+Adding realism to the game play, the program checks for collision between the puzzle tiles. After each tile move, if there is a collision, the penetration amount between the penetrating vertex and the penetrated edge is calculated.
 
-Before we calculate the penetration amount, we identify all the vertices that have penetrated another polygon. This by iterating through each vertex polygon combination possible (with some pruning) running the following funciton
+Before we can calculate the penetration amount, we first need to find all the vertices that have penetrated another polygon by iterating through each vertex polygon combination possible (with some pruning) running the following function. 
+
+Note: All points and vectors in the format of a length 2 array [x-component,y-compoent], 
 
 ```javascript
 export const toVec = (a, b) => [b[0] - a[0], b[1] - a[1]];
 export const cross = (v, w) => v[0] * w[1] - v[1] * w[0];
 
 export function insidePoly(vertices, p) {
+  // checks if point p in located inside polygon with def by the vertices argment
   // important!! this assumes vertices are arranged in counter clockwise order
   let left = vertices[vertices.length - 1];
   for (let i = 0; i < vertices.length; i++) {
